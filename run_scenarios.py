@@ -85,7 +85,7 @@ def main(argv=None) -> int:
     parser.add_argument("--all", action="store_true")
     parser.add_argument("--only", help="one scenario id, for example S5")
     parser.add_argument("--repeat", type=int, default=1)
-    parser.add_argument("--verbose", action="store_true", help="also print each run's trace")
+    parser.add_argument("--verbose", action="store_true", help="also print each run's output (the live log and the trace)")
     args = parser.parse_args(argv)
     import config
     config.load_env()

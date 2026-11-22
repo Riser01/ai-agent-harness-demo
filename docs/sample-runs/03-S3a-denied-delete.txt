@@ -1,18 +1,19 @@
 Recorded real run (Gemini, gemini-flash-lite-latest). Yours will vary.
-Command: python3 agent.py Delete the dentist task. --approve no --state /tmp/demo-s3a.json --seed data/seeds/week_start.json
+Command: python3 agent.py "Delete the dentist task." --approve no --state /tmp/demo-s3a.json --seed data/seeds/week_start.json
 
+INFO  step 1  model  shown 1 line, replied in 1.0s (202 in / 13 out tokens): {"tool": "list_tasks", "args": {}}
+INFO  step 1  tool   list_tasks {}  ->  1: Mon 23 Nov: renew car insurance | 2: Pay rent | 3: Wed 25 Nov: prepare slides for team sync | 4: Book dentist appointment | 5: Thu 26 Nov: call the plumber about the kitchen tap | 6: Fri 27 Nov: buy a birthday gift for Anil
+INFO  step 2  model  shown 3 lines, replied in 1.0s (280 in / 17 out tokens): {"tool": "delete_task", "args": {"id": 4}}
+WARN  step 2  gate   delete task 4: "Book dentist appointment"  ->  denied
+INFO  step 3  model  shown 5 lines, replied in 0.8s (314 in / 22 out tokens): {"final": "I understand you wanted to delete the dentist task, but the action was not approved."}
+INFO          run    ended: status=done-with-denials after 3 model calls. Last: final: I understand you wanted to delete the dentist task, but the action was not approved.
 step 1  model  -> list_tasks {}
-step 1  tool   <- 1: Mon 23 Nov: renew car insurance
-2: Pay rent
-3: Wed 25 Nov: prepare slides for team sync
-4: Book dentist appointment
-5: Thu 26 Nov: call the plumber about the kitchen tap
-6: Fri 27 Nov: buy a birthday gift for Anil
+step 1  tool   <- 1: Mon 23 Nov: renew car insurance | 2: Pay rent | 3: Wed 25 Nov: prepare slides for team sync | 4: Book dentist appointment | 5: Thu 26 Nov: call the plumber about the kitchen tap | 6: Fri 27 Nov: buy a birthday gift for Anil
 step 2  model  -> delete_task {"id": 4}
 step 2  gate   X  delete_task {"id": 4}
-step 3  model  -> final: I was not permitted to delete the dentist task.
+step 3  model  -> final: I understand you wanted to delete the dentist task, but the action was not approved.
 status: done-with-denials
-answer: I was not permitted to delete the dentist task.
+answer: I understand you wanted to delete the dentist task, but the action was not approved.
 tasks left: 6
   1: Mon 23 Nov: renew car insurance
   2: Pay rent

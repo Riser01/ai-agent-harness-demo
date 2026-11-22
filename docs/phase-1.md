@@ -37,5 +37,12 @@ python3 try_it.py "Add File taxes, then show me my list." --approve yes
 
 **What to expect:** about 3 model calls: `add_task`, `list_tasks`, then `final`. A trace with numbered steps. Status `done`. Your wording will differ from `sample-runs/01-S1-add-and-list.txt`.
 
+**The live log.** While the run goes, `try_it.py` prints one line per event (on by default; add `--quiet` to see only the end-of-run trace). Each line starts with a level: `INFO` is normal, `WARN` is worth a look (a tool error, a rejected input, a refused approval, a retry), `ERROR` is a failed model call or an unusable reply. Then the step (the model-call count) and what happened:
+- `model  shown 3 lines, replied in 1.8s (412 in / 31 out tokens): {...}`: the model saw 3 history lines, took 1.8 seconds, and this is its **raw reply**, exactly as it wrote it, before the harness read it. A reply wrapped in chatter or code fences shows up here.
+- `tool   add_task {"text": "File taxes"}  ->  added task 1`: the tool's input, then its output.
+- `gate   delete task 2: "Pay rent"  ->  approved` (or `denied`): the question the human saw and the answer.
+- `run    ended: status=done after 3 model calls. Last: ...`: why the run stopped.
+The live log is printed by `extras/trace_export.py`, which wraps your model, tools and approver; your `harness.py` is not changed.
+
 ## In the wild
 This loop is the core of every coding agent, for example Claude Code, and of the OpenAI Agents SDK: ask the model, run the tool, feed the result back, repeat.

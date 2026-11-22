@@ -1,33 +1,26 @@
 Recorded real run (Gemini, gemini-flash-lite-latest). Yours will vary.
-Command: python3 agent.py Add "File taxes", then show me my list. --approve yes --state /tmp/demo-s1.json --seed data/seeds/week_start.json
+Command: python3 agent.py "Add File taxes, then show me my list." --approve yes --state /tmp/demo-s1.json --seed data/seeds/week_start.json
 
+INFO  step 1  model  shown 1 line, replied in 0.8s (208 in / 18 out tokens): {"tool": "add_task", "args": {"text": "File taxes"}}
+INFO  step 1  tool   add_task {"text": "File taxes"}  ->  added task 7
+INFO  step 2  model  shown 3 lines, replied in 1.0s (228 in / 13 out tokens): {"tool": "list_tasks", "args": {}}
+INFO  step 2  tool   list_tasks {}  ->  1: Mon 23 Nov: renew car insurance | 2: Pay rent | 3: Wed 25 Nov: prepare slides for team sync | 4: Book dentist appointment | 5: Thu 26 Nov: call the plumber about the kitchen tap | 6: Fri 27 Nov: buy a birthday gift for Anil | 7: File taxes
+INFO  step 3  model  shown 5 lines, replied in 1.2s (311 in / 109 out tokens): {"final": "I have added \"File taxes\" to your to-do list (Task ID: 7). Your current list includes:\n1. Mon 23 Nov: renew car insurance\n2. Pay rent\n3. Wed 25 Nov: prepare slides for team sync\n4. Book dentist appointment\n5. Thu 26 Nov: call the plumber about the kitchen tap\n6. Fri 27 Nov: buy a birthday gift for Anil\n7. File taxes"}
+INFO          run    ended: status=done after 3 model calls. Last: final: I have added "File taxes" to your to-do list (Task ID: 7). Your current list includes: | 1. Mon 23 Nov: renew car insurance | 2. Pay rent | 3. Wed 25 Nov: prepare slides for team sync | 4. Book dentist appointment | 5. Thu 26 Nov: call the plumber about the kitchen tap | 6. Fri 27 Nov: buy a birthday gif [truncated]
 step 1  model  -> add_task {"text": "File taxes"}
 step 1  tool   <- added task 7
 step 2  model  -> list_tasks {}
-step 2  tool   <- 1: Mon 23 Nov: renew car insurance
-2: Pay rent
-3: Wed 25 Nov: prepare slides for team sync
-4: Book dentist appointment
-5: Thu 26 Nov: call the plumber about the kitchen tap
-6: Fri 27 Nov: buy a birthday gift for Anil
-7: File taxes
-step 3  model  -> final: I've added "File taxes" to your to-do list. Here is your current list:
-1: Mon 23 Nov: renew car insurance
-2: Pay rent
-3: Wed 25 Nov: prepare slides for team sync
-4: Book dentist appointment
-5: Thu 26 Nov: call the plumber about the kitchen tap
-6: Fri 27 Nov: buy a birthday gift for Anil
-7: Fi [truncated]
+step 2  tool   <- 1: Mon 23 Nov: renew car insurance | 2: Pay rent | 3: Wed 25 Nov: prepare slides for team sync | 4: Book dentist appointment | 5: Thu 26 Nov: call the plumber about the kitchen tap | 6: Fri 27 Nov: buy a birthday gift for Anil | 7: File taxes
+step 3  model  -> final: I have added "File taxes" to your to-do list (Task ID: 7). Your current list includes: | 1. Mon 23 Nov: renew car insurance | 2. Pay rent | 3. Wed 25 Nov: prepare slides for team sync | 4. Book dentist appointment | 5. Thu 26 Nov: call the plumber about the kitchen tap | 6. Fri 27 Nov: buy a birthday gif [truncated]
 status: done
-answer: I've added "File taxes" to your to-do list. Here is your current list:
-1: Mon 23 Nov: renew car insurance
-2: Pay rent
-3: Wed 25 Nov: prepare slides for team sync
-4: Book dentist appointment
-5: Thu 26 Nov: call the plumber about the kitchen tap
-6: Fri 27 Nov: buy a birthday gift for Anil
-7: File taxes
+answer: I have added "File taxes" to your to-do list (Task ID: 7). Your current list includes:
+1. Mon 23 Nov: renew car insurance
+2. Pay rent
+3. Wed 25 Nov: prepare slides for team sync
+4. Book dentist appointment
+5. Thu 26 Nov: call the plumber about the kitchen tap
+6. Fri 27 Nov: buy a birthday gift for Anil
+7. File taxes
 tasks left: 7
   1: Mon 23 Nov: renew car insurance
   2: Pay rent

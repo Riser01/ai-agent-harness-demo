@@ -1,6 +1,6 @@
 # Drills: see the parts that a normal run never shows
 
-Each drill takes about five minutes and uses only the files you already have. **Predict first** (write one line), then run. Commands use `try_it.py` (works from Phase 1) and `agent.py` (after Phase 6); the flags are the same. Delete `scratch.json` between drills that save.
+Each drill takes about five minutes and uses only the files you already have. **Predict first** (write one line), then run. Commands use `try_it.py` (works from Phase 1) and `agent.py` (after Phase 6); the flags are the same. Delete `scratch.json` between drills that save. The live log is on by default (`--quiet` turns it off): before the trace, read the `model` lines for the model's raw reply, the `tool` lines for each input and output, and the `gate` lines for the question and the answer. These show what the model really said at each step, which the end-of-run trace only summarises.
 
 | # | Phase | Part | Drill | Command | Predict, then look for |
 |---|---|---|---|---|---|

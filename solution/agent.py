@@ -5,18 +5,19 @@ until something joins them and reads your command line, and that is this file. I
 written here would be invisible to the tests, so every rule stays in the harness where the tests protect it.
 
 What to look at, and why each piece is here (line numbers are for this file as shipped)
-    build_parser (line 39)
+    build_parser (line 40)
         Every flag in one place, so you can see everything a run can be told to do.
-    make_approver (line 56)
+    make_approver (line 58)
         Turns --approve into the harness's approval callback, and shows the human the real effect of what they are
         being asked to approve.
-    main (line 69)
-        Loads memory first: a saved file wins, and the seed is only the very first start (76). Then it picks the
-        engine (98), wires the checkpoint hook that saves after every change (110), runs, and prints the
-        trace (119).
-    Exit codes (line 127; setup problems at 85)
+    main (line 71)
+        Loads memory first: a saved file wins, and the seed is only the very first start (78). Unless --quiet,
+        it wraps the model, tools and approver so a live log prints while the run goes (101). Then it picks the
+        engine (105), wires the checkpoint hook that saves after every change (115), runs, and prints the
+        trace (121).
+    Exit codes (line 130; setup problems at 87)
         0 finished, 1 stopped early, 2 a setup problem, so a script can tell the three apart.
-    Reading .env (line 131)
+    Reading .env (line 134)
         Only the command line does it, so tests that call main() stay predictable.
 
 Examples:
@@ -45,6 +46,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--seed", help="a starting task list (a JSON file); used only when the state file does not exist yet")
     p.add_argument("--engine", choices=["plain", "langgraph"], default="plain")
     p.add_argument("--export", choices=["console", "langfuse"], help="also draw the run as a tree (extras/trace_export.py)")
+    p.add_argument("--quiet", action="store_true", help="turn off the live log of every model reply, tool call and approval")
     p.add_argument("--naive-prompt", action="store_true", help="drop the prompt's warning about tool results (injection drill)")
     p.add_argument("--max-steps", type=int, default=10)
     p.add_argument("--max-history", type=int, default=None, help="show the model only the last N history lines")
@@ -95,23 +97,24 @@ def main(argv=None, *, model=None, input_fn=input, out=print) -> int:
     limits = dict(max_steps=args.max_steps, max_result_chars=args.max_result_chars)
     common = dict(model=model, tools=ALL_TOOLS, state=state, approve=make_approver(args.approve, input_fn, out),
                   verify=make_oldest_verifier(state, args.verify_oldest) if args.verify_oldest else None)
+    tracer = None
+    if args.export or not args.quiet:            # the live log and --export both wrap the model, tools and approver
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "extras"))
+        from trace_export import ListSink, Tracer, choose_sink, run_traced
+        tracer = Tracer(choose_sink(args.export) if args.export else ListSink(), log=None if args.quiet else out)
     if args.engine == "langgraph":
         if args.max_history is not None:
             out("note: --max-history is not used by the langgraph engine")
         from graph import run_graph
-        if args.export:
-            sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "extras"))
-            from trace_export import Tracer, choose_sink, run_traced
-            result = run_traced(args.goal, Tracer(choose_sink(args.export)), engine=run_graph, **common, **limits)
+        if tracer:
+            result = run_traced(args.goal, tracer, engine=run_graph, **common, **limits)
         else:
             result = run_graph(args.goal, **common, **limits)
         save_state(state, args.state)               # this engine has no checkpoint hook, so save once at the end
     else:
         engine_args = dict(common, max_history=args.max_history, checkpoint=lambda s: save_state(s, args.state))
-        if args.export:
-            sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "extras"))
-            from trace_export import Tracer, choose_sink, run_traced
-            result = run_traced(args.goal, Tracer(choose_sink(args.export)), **engine_args, **limits)
+        if tracer:
+            result = run_traced(args.goal, tracer, **engine_args, **limits)
         else:
             result = run(args.goal, **engine_args, **limits)
 

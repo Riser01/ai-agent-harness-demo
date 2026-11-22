@@ -163,6 +163,7 @@ def _chat(system: str, user: str, json_mode: bool) -> str:
     if not text.strip():  # blocked by a filter, or cut off before any text
         reason = choices[0].get("finish_reason") if choices else "no choices"
         raise RuntimeError(f"model returned no text (reason: {reason})")
+    last_call["raw"] = text   # the reply as the model wrote it, for the live log; prompts and keys are never kept
     return text
 
 
@@ -184,7 +185,7 @@ def make_model(tools: list[Any], naive: bool = False) -> Callable[[list[str]], d
             first = dict(last_call)
             retry = _chat(system + "\nYour last reply was not valid JSON. Reply with ONE JSON object only.", "\n".join(history), json_mode=True)
             usage_sum = {k: first.get("usage", {}).get(k, 0) + last_call.get("usage", {}).get(k, 0) for k in ("prompt_tokens", "completion_tokens", "total_tokens")}
-            last_call.update(reasked=True, usage=usage_sum, attempts=last_call.get("attempts", 1) + first.get("attempts", 1), waited=round(last_call.get("waited", 0) + first.get("waited", 0), 1))
+            last_call.update(reasked=True, first_raw=text, usage=usage_sum, attempts=last_call.get("attempts", 1) + first.get("attempts", 1), waited=round(last_call.get("waited", 0) + first.get("waited", 0), 1))
             return parse_decision(retry)
 
     return model

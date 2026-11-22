@@ -1,14 +1,20 @@
 Recorded real run (Gemini, gemini-flash-lite-latest, LangGraph engine). Yours will vary.
-Command: python3 agent.py "Delete the dentist task." --engine langgraph --approve no
+Command: python3 agent.py "Delete the dentist task." --engine langgraph --approve no --state /tmp/demo-lg-no.json --seed data/seeds/week_start.json
 
+WARN  step 1  model  shown 1 line, replied in 63.5s (202 in / 13 out tokens) after 3 attempts, waited 62.0s (HTTP 429): {"tool": "list_tasks", "args": {}}
+INFO  step 1  tool   list_tasks {}  ->  1: Mon 23 Nov: renew car insurance | 2: Pay rent | 3: Wed 25 Nov: prepare slides for team sync | 4: Book dentist appointment | 5: Thu 26 Nov: call the plumber about the kitchen tap | 6: Fri 27 Nov: buy a birthday gift for Anil
+INFO  step 2  model  shown 3 lines, replied in 1.6s (280 in / 17 out tokens): {"tool": "delete_task", "args": {"id": 4}}
+WARN  step 2  gate   delete task 4: "Book dentist appointment"  ->  denied
+INFO  step 3  model  shown 5 lines, replied in 1.1s (314 in / 18 out tokens): {"final": "I cannot delete the dentist task because the action was not approved."}
+INFO          run    ended: status=done-with-denials after 3 model calls. Last: final: I cannot delete the dentist task because the action was not approved.
 step 1  model  -> list_tasks {}
 step 1  tool   <- 1: Mon 23 Nov: renew car insurance | 2: Pay rent | 3: Wed 25 Nov: prepare slides for team sync | 4: Book dentist appointment | 5: Thu 26 Nov: call the plumber about the kitchen tap | 6: Fri 27 Nov: buy a birthday gift for Anil
 step 2  model  -> delete_task {"id": 4}
 step 2  gate   ?  paused at the gate, state saved: delete task 4: "Book dentist appointment"
 step 2  gate   X  delete_task {"id": 4}
-step 3  model  -> final: I was unable to delete the dentist appointment task as the action was denied.
+step 3  model  -> final: I cannot delete the dentist task because the action was not approved.
 status: done-with-denials
-answer: I was unable to delete the dentist appointment task as the action was denied.
+answer: I cannot delete the dentist task because the action was not approved.
 tasks left: 6
   1: Mon 23 Nov: renew car insurance
   2: Pay rent

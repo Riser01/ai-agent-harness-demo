@@ -46,6 +46,7 @@ python3 check.py             # all green (Phase 5 needs: pip install -r requirem
 python3 agent.py "Delete the dentist task." --approve ask --seed data/seeds/week_start.json --state scratch.json
 python3 run_scenarios.py     # live scenarios on a real model
 ```
+While a run goes, `agent.py` and `try_it.py` print a live log by default: each model reply (raw), tool input and output, and approval question and answer. `--quiet` turns it off. (`run_scenarios.py --verbose` prints each run's output.)
 Fallen behind? `checkpoints/after-phase-2.zip` and `after-phase-4.zip` hold the learner-built files up to those phases. Unzip into the project root (this overwrites your own `harness.py`, `tools.py` (and `store.py` for the Phase 4 zip), so copy them first) and run `python3 check.py`.
 
 ## Free accounts you need (2 minutes each)
@@ -74,4 +75,4 @@ Finishing **Phases 0 to 2** is a complete, successful outcome, especially if you
 | `checkpoints/` | rejoin points for Phases 2 and 4 |
 | you build | `tools.py`, `harness.py`, `store.py`, `graph.py`, `agent.py` (in this folder) |
 
-Python 3.10 or newer. Everything except LangGraph (Phase 5) and Langfuse (optional) uses only the standard library.
+Python 3.10 or newer (the optional Langfuse package needs 3.11 or newer). Everything except LangGraph (Phase 5) and Langfuse (optional) uses only the standard library.

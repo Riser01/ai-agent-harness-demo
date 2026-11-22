@@ -1,13 +1,20 @@
 Recorded real run (Gemini, gemini-flash-lite-latest). Yours will vary.
-Command: python3 agent.py Archive the dentist task. --approve yes --state /tmp/demo-a.json --seed data/seeds/week_start.json
+Command: python3 agent.py "Archive the dentist task." --approve yes --state /tmp/demo-a.json --seed data/seeds/week_start.json
 
+INFO  step 1  model  shown 1 line, replied in 1.3s (202 in / 13 out tokens): {"tool": "list_tasks", "args": {}}
+INFO  step 1  tool   list_tasks {}  ->  1: Mon 23 Nov: renew car insurance | 2: Pay rent | 3: Wed 25 Nov: prepare slides for team sync | 4: Book dentist appointment | 5: Thu 26 Nov: call the plumber about the kitchen tap | 6: Fri 27 Nov: buy a birthday gift for Anil
+INFO  step 2  model  shown 3 lines, replied in 1.0s (280 in / 17 out tokens): {"tool": "delete_task", "args": {"id": 4}}
+INFO  step 2  gate   delete task 4: "Book dentist appointment"  ->  approved
+INFO  step 2  tool   delete_task {"id": 4}  ->  deleted task 4
+INFO  step 3  model  shown 5 lines, replied in 0.8s (299 in / 16 out tokens): {"final": "The dentist appointment task has been successfully archived (deleted)."}
+INFO          run    ended: status=done after 3 model calls. Last: final: The dentist appointment task has been successfully archived (deleted).
 step 1  model  -> list_tasks {}
 step 1  tool   <- 1: Mon 23 Nov: renew car insurance | 2: Pay rent | 3: Wed 25 Nov: prepare slides for team sync | 4: Book dentist appointment | 5: Thu 26 Nov: call the plumber about the kitchen tap | 6: Fri 27 Nov: buy a birthday gift for Anil
 step 2  model  -> delete_task {"id": 4}
 step 2  tool   <- deleted task 4
-step 3  model  -> final: The dentist appointment task has been archived (deleted).
+step 3  model  -> final: The dentist appointment task has been successfully archived (deleted).
 status: done
-answer: The dentist appointment task has been archived (deleted).
+answer: The dentist appointment task has been successfully archived (deleted).
 tasks left: 5
   1: Mon 23 Nov: renew car insurance
   2: Pay rent

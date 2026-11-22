@@ -12,6 +12,9 @@ What to look at
     read_seed()  loads a starting list using only tools.py, so it works before Phase 4.
     ARROWS       one short label per trace kind, so model, tool, gate and stop lines are easy to tell apart.
     --gullible   swaps in the deterministic FOOLED model stand-in (no key needed), so you can watch the gate.
+    live log     prints a line while the run is going for each model reply, tool call and approval
+                 (extras/trace_export.py wraps the model, tools and approver; your harness is not changed).
+                 --quiet turns it off and prints only the end-of-run trace.
 
 Examples:
     python3 try_it.py "Add File taxes, then show my list" --approve yes
@@ -20,6 +23,7 @@ Examples:
     python3 try_it.py "Add File taxes" --state scratch.json         (Phase 4: saved between runs)
     python3 try_it.py "Delete the dentist task." --engine langgraph (Phase 5)
     python3 try_it.py "Tidy up my list." --seed data/seeds/trap.json --gullible    (a fooled model: watch the gate)
+    python3 try_it.py "Add File taxes, then show my list" --approve yes --quiet       (no live log)
 """
 import argparse
 import json
@@ -54,6 +58,7 @@ def main(argv=None) -> int:
     p.add_argument("--verify-oldest", type=int)
     p.add_argument("--gullible", action="store_true", help="use the deterministic FOOLED model stand-in (no key needed)")
     p.add_argument("--engine", choices=["plain", "langgraph"], default="plain")
+    p.add_argument("--quiet", action="store_true", help="turn off the live log of every model reply, tool call and approval")
     args = p.parse_args(argv)
     config.load_env()
     state, checkpoint = (read_seed(args.seed) if args.seed else new_state()), None
@@ -84,13 +89,19 @@ def main(argv=None) -> int:
         options["verify"] = verify
     if args.engine == "langgraph":
         from graph import run_graph
-        result = run_graph(args.goal, **options)
+        engine = run_graph                                  # it takes no max_history or checkpoint
     else:
+        engine = run
         if args.max_history is not None:
             options["max_history"] = args.max_history
         if checkpoint:
             options["checkpoint"] = checkpoint
-        result = run(args.goal, **options)
+    if not args.quiet:
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "extras"))
+        from trace_export import ListSink, Tracer, run_traced
+        result = run_traced(args.goal, Tracer(ListSink(), log=print), engine=engine, **options)
+    else:
+        result = engine(args.goal, **options)
     for entry in result.trace:
         print(f"step {entry.step:<2} {ARROWS.get(entry.kind, entry.kind)} {entry.detail.replace(chr(10), ' | ')}")
     print(f"status: {result.status}\nanswer: {result.answer}")

@@ -1,6 +1,8 @@
 Recorded real run (Gemini, gemini-flash-lite-latest). Yours will vary.
-Command: LLM_TIMEOUT_SECONDS=0.001 python3 agent.py Add File taxes --state /tmp/demo-t.json --seed data/seeds/week_start.json
+Command: LLM_TIMEOUT_SECONDS=0.001 python3 agent.py "Add File taxes" --state /tmp/demo-t.json --seed data/seeds/week_start.json
 
+ERROR step 1  model  call failed after 3 attempts, waited 4.0s (not reachable): model API not reachable: <urlopen error timed out>
+WARN          run    ended: status=model-error after 1 model call. Last: model error: model API not reachable: <urlopen error timed out>
 step 1  stop   #  model error: model API not reachable: <urlopen error timed out>
 status: model-error
 answer: stopped: the model call failed
