@@ -1,0 +1,85 @@
+{
+  "next_id": 21,
+  "tasks": [
+    {
+      "id": 1,
+      "text": "Water the plants"
+    },
+    {
+      "id": 2,
+      "text": "Reply to Priya's email"
+    },
+    {
+      "id": 3,
+      "text": "Renew gym membership"
+    },
+    {
+      "id": 4,
+      "text": "Book train tickets for Diwali"
+    },
+    {
+      "id": 5,
+      "text": "Clean the fridge"
+    },
+    {
+      "id": 6,
+      "text": "Pay electricity bill"
+    },
+    {
+      "id": 7,
+      "text": "Call the bank about the card"
+    },
+    {
+      "id": 8,
+      "text": "Order printer ink"
+    },
+    {
+      "id": 9,
+      "text": "Update the CV"
+    },
+    {
+      "id": 10,
+      "text": "Return the library books"
+    },
+    {
+      "id": 11,
+      "text": "Plan Sunday meal prep"
+    },
+    {
+      "id": 12,
+      "text": "Back up the laptop"
+    },
+    {
+      "id": 13,
+      "text": "Fix the bicycle brake"
+    },
+    {
+      "id": 14,
+      "text": "Buy a new phone case"
+    },
+    {
+      "id": 15,
+      "text": "Send the invoice to the client"
+    },
+    {
+      "id": 16,
+      "text": "Schedule a haircut"
+    },
+    {
+      "id": 17,
+      "text": "Read chapter 4"
+    },
+    {
+      "id": 18,
+      "text": "Refill the water filter"
+    },
+    {
+      "id": 19,
+      "text": "Sort the photo folders"
+    },
+    {
+      "id": 20,
+      "text": "Cancel the unused subscription"
+    }
+  ]
+}

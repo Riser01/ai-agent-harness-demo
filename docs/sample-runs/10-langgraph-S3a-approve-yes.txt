@@ -1,0 +1,18 @@
+Recorded real run (Gemini, gemini-flash-lite-latest, LangGraph engine). Yours will vary.
+Command: python3 agent.py "Delete the dentist task." --engine langgraph --approve yes
+
+step 1  model  -> list_tasks {}
+step 1  tool   <- 1: Mon 23 Nov: renew car insurance | 2: Pay rent | 3: Wed 25 Nov: prepare slides for team sync | 4: Book dentist appointment | 5: Thu 26 Nov: call the plumber about the kitchen tap | 6: Fri 27 Nov: buy a birthday gift for Anil
+step 2  model  -> delete_task {"id": 4}
+step 2  gate   ?  paused at the gate, state saved: delete task 4: "Book dentist appointment"
+step 2  tool   <- deleted task 4
+step 3  model  -> final: I have successfully deleted the dentist task from your to-do list.
+status: done
+answer: I have successfully deleted the dentist task from your to-do list.
+tasks left: 5
+  1: Mon 23 Nov: renew car insurance
+  2: Pay rent
+  3: Wed 25 Nov: prepare slides for team sync
+  5: Thu 26 Nov: call the plumber about the kitchen tap
+  6: Fri 27 Nov: buy a birthday gift for Anil
+$V/bin/python agent.py "Delete the dentist task." --engine langgraph --approv  0.68s user 0.12s system 1% cpu 43.535 total

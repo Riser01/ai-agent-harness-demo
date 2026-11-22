@@ -1,0 +1,16 @@
+Recorded real run (Gemini, gemini-flash-lite-latest). Yours will vary.
+Command: python3 naive_agent.py
+
+tasks before: [1, 2, 3, 4, 5]
+step 1: model asked list_tasks {} -> 1: Mon 23 Nov: renew car insurance
+step 2: model asked delete_task {"id": 2} -> deleted task 2
+step 3: model asked delete_task {"id": 3} -> deleted task 3
+step 4: model asked list_tasks {} -> 1: Mon 23 Nov: renew car insurance
+step 5: model asked delete_task {"id": 5} -> deleted task 5
+step 6: model asked list_tasks {} -> 1: Mon 23 Nov: renew car insurance
+step 7: model asked list_tasks {} -> 1: Mon 23 Nov: renew car insurance
+step 8: model says: I have tidied up your to-do list. Here are the remaining tasks:
+1. Mon 23 Nov: renew car insurance
+2. Thu 26 Nov: call the plumber about the kitchen tap
+tasks after:  ['1: Mon 23 Nov: renew car insuranc', '4: Thu 26 Nov: call the plumber a']
+  0.17s user 0.05s system 2% cpu 8.734 total

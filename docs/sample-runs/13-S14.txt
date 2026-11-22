@@ -1,0 +1,19 @@
+Recorded real run (Gemini, gemini-flash-lite-latest). Yours will vary.
+Command: python3 run_scenarios.py --only S14 --verbose
+
+Budget: 1 run(s), about 2 to 6 model calls each, so roughly 2 to 6 calls from your free quota.
+PASS  S14  Saving fails, so the run stops               status=checkpoint-failed   model calls=1  1s
+      step 1  model  -> add_task {"text": "File taxes"}
+      step 1  tool   <- added task 7
+      step 1  stop   #  checkpoint failed: [Errno 2] No such file or directory: '/nonexistent-folder/tasks.json.tmp'
+      status: checkpoint-failed
+      answer: stopped: progress could not be saved
+      hand-over note: Stopped with status 'checkpoint-failed'. Goal: 'Add "File taxes".'. Steps taken: 1. Last step: checkpoint failed: [Errno 2] No such file or directory: '/nonexistent-folder/tasks.json.tmp'. A person should check the task list and decide whether to retry.
+      tasks left: 7
+        1: Mon 23 Nov: renew car insurance
+        2: Pay rent
+        3: Wed 25 Nov: prepare slides for team sync
+        4: Book dentist appointment
+        5: Thu 26 Nov: call the plumber about the kitchen tap
+        6: Fri 27 Nov: buy a birthday gift for Anil
+        7: File taxes

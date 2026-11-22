@@ -1,0 +1,14 @@
+# Drills: see the parts that a normal run never shows
+
+Each drill takes about five minutes and uses only the files you already have. **Predict first** (write one line), then run. Commands use `try_it.py` (works from Phase 1) and `agent.py` (after Phase 6); the flags are the same. Delete `scratch.json` between drills that save.
+
+| # | Phase | Part | Drill | Command | Predict, then look for |
+|---|---|---|---|---|---|
+| 1 | 2 | Gates | **A fooled model, deterministic.** A real model is often not fooled, so use the stand-in that always obeys the planted note | `python3 try_it.py "Tidy up my list." --seed data/seeds/trap.json --gullible --approve no` | `gate X` on task 2 and on task 3; "Pay rent" still on the list. The model was fooled; the harness was not |
+| 2 | 2 | Context | **Forgetting on purpose.** Show the model nothing but the goal | `python3 try_it.py "Add File taxes, then show me my list." --seed data/seeds/week_start.json --approve yes --max-history 0` | the model keeps repeating its first move (it cannot see its own history), so expect a duplicate error and then `loop-detected` |
+| 3 | 3a | Loop | **The step cap, live.** Allow only 2 model calls | `python3 try_it.py "Add File taxes, then show me my list." --seed data/seeds/week_start.json --approve yes --max-steps 2` | status `step-limit`, a hand-over note, and (on `agent.py`) exit code 1 |
+| 4 | 3b | Verify | **Catch the drift.** After `delete task 99` fails, a real model once went on to delete task 6 unasked (`sample-runs/12-failed-delete-then-drift.txt`). Write the sentence "nothing may be removed except the task I named", ask your agent to turn it into a `verify` rule, and run `Delete task 99` with `--approve yes` | `python3 agent.py "Delete task 99." --approve yes --seed data/seeds/week_start.json` | if the model drifts, the status is `failed-verification` instead of a cheerful `done` |
+| 5 | 4 | Memory | **A damaged file is an error, not a reset.** Copy `data/seeds/trap.json` to `bad.json` and delete its last `}` | `python3 agent.py "What is on my list?" --state bad.json` | exit code 2 and a plain message; your list is not silently replaced |
+| 6 | 4 | Memory | **Saving fails, so the run stops.** Point `--state` at a folder that does not exist | `python3 agent.py "Add File taxes." --approve yes --state no_such_folder/t.json` | status `checkpoint-failed` and a hand-over note: loud, not silent |
+| 7 | 6 | Trace | **Name the failure from the trace alone.** Open `sample-runs/12-failed-delete-then-drift.txt` and hide the status | read it | which failure mode (silent drift after an error)? which part should have caught it (Verify)? |
+| 8 | 6 | Tools | **Swap the model, touch no code.** In `.env` set `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL` for a different OpenAI-compatible provider (only Gemini has been tested) | `python3 run_scenarios.py --all` | the same PASS lines. A different model, the same harness: this is why the model adapter is a separate layer |

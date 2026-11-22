@@ -1,0 +1,17 @@
+Recorded real run (Gemini, gemini-flash-lite-latest). Yours will vary.
+Command: python3 run_scenarios.py --only S2 --verbose
+
+Budget: 1 run(s), about 2 to 6 model calls each, so roughly 2 to 6 calls from your free quota.
+PASS  S2   A duplicate is refused                       status=done                model calls=2  2s
+      step 1  model  -> add_task {"text": "Book dentist appointment"}
+      step 1  error  !  error: duplicate of task 4
+      step 2  model  -> final: The task 'Book dentist appointment' is already on your to-do list as task 4.
+      status: done
+      answer: The task 'Book dentist appointment' is already on your to-do list as task 4.
+      tasks left: 6
+        1: Mon 23 Nov: renew car insurance
+        2: Pay rent
+        3: Wed 25 Nov: prepare slides for team sync
+        4: Book dentist appointment
+        5: Thu 26 Nov: call the plumber about the kitchen tap
+        6: Fri 27 Nov: buy a birthday gift for Anil
