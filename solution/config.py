@@ -1,15 +1,17 @@
-"""Load your own keys from a `.env` file into the environment, so no key ever appears in code.
+"""This file loads your own keys from a `.env` file into the environment, so no key ever appears in code.
 
-WHY THIS FILE EXISTS
-    The demo needs a few secrets (a Gemini key, optionally Langfuse keys). Secrets in source code get committed and
-    shared by accident. A git-ignored `.env` file keeps them on your machine only; this tiny loader reads it.
+The demo needs a few secrets: a Gemini key, and optionally Langfuse keys. Secrets written into source code get
+committed and shared by accident. A git-ignored `.env` file keeps them on your machine only, and this tiny loader
+reads it. It uses the standard library only (no python-dotenv).
 
-RULES
-    * Standard library only (no python-dotenv).
-    * A variable already set in your shell wins over the file (setdefault), so `export GEMINI_API_KEY=...` still works.
-    * Blank values are ignored, so an unfilled `.env` is the same as no keys.
-    * Call load_env() once at the start of a script (agent.py and try_it.py do). Library code reads os.environ only, so tests
-      never depend on whatever `.env` happens to be on disk.
+You call load_env() once at the start of a script; agent.py and try_it.py do. Library code reads os.environ only,
+so tests never depend on whatever `.env` happens to be on disk.
+
+What to look at in load_env()
+    Your shell wins     a variable already set in your shell is kept over the file (setdefault), so
+                        `export GEMINI_API_KEY=...` still works.
+    Blanks are ignored  an unfilled `.env` behaves the same as no keys at all.
+    Names, not values   it returns the names it set and never the values, so nothing secret gets printed.
 """
 import os
 from pathlib import Path

@@ -1,15 +1,18 @@
 """Trace export: show every step of a run in a trace viewer such as Langfuse, without editing harness.py.
 
-WHY THIS FILE EXISTS
-    The harness already records a trace (TraceEntry lines). That is enough on a laptop. At work you also want
-    time per step, a tree of what happened, and a place the whole team can open. Trace viewers draw exactly that.
-    The harness code stays the same; only WHERE the lines go changes. This file does that by wrapping the three
-    things the harness already accepts as arguments: the model, the tools and the approve callback.
+The harness already records a trace (TraceEntry lines), and that is enough on a laptop. At work you also want
+time per step, a tree of what happened, and a place the whole team can open. Trace viewers draw exactly that.
+The harness code stays the same; only WHERE the lines go changes. This file does that by wrapping the three
+things the harness already accepts as arguments: the model, the tools and the approve callback. So you never
+edit harness.py just to add logging, and never risk the safety behaviour the tests protect.
 
-WHAT IT PREVENTS
-    * Editing harness.py just to add logging (every edit risks the safety behaviour the tests protect).
-    * A broken viewer breaking the agent: if the exporter fails, it warns once and the run carries on unchanged.
-    * Leaking too much: every input and output is cut to MAX_TEXT characters before it leaves the program.
+What to look at
+    Tracer          wrap_model(), wrap_tools() and wrap_approve() report each call as a span. If the exporter
+                    fails, it warns once and the run carries on unchanged, so a broken viewer never breaks the agent.
+    MAX_TEXT, _cut  every input and output is cut to MAX_TEXT characters before it leaves the program, so a run
+                    cannot leak too much.
+    choose_sink()   picks Langfuse when its keys and package are present, and falls back to printing the tree here.
+    run_traced()    runs an engine exactly as before under one "run" span, and returns the same RunResult.
 
 PRIVACY: spans carry prompts and task text. Send only toy data to a hosted viewer, never real tasks.
 

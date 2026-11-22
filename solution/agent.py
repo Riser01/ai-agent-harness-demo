@@ -1,13 +1,23 @@
-"""The Desk Assistant: the command-line app that wires every part together. This is Phase 6.
+"""The Desk Assistant: the command-line app that joins every part, and the one file with no rules of its own.
 
-WHY THIS FILE EXISTS
-    harness.py is the engine, tools.py is the to-do app, store.py is the saved file, llm.py is the model. Nothing runs
-    until something connects them and reads your command line. That is this file, and it should stay thin: no rules of
-    its own, only wiring.
+harness.py is the engine, tools.py is the to-do app, store.py is the saved file and llm.py is the model. Nothing runs
+until something joins them and reads your command line, and that is this file. It stays thin on purpose: a safety rule
+written here would be invisible to the tests, so every rule stays in the harness where the tests protect it.
 
-WHAT IT PREVENTS
-    * Rules hiding in the wrapper: every safety rule stays in the harness, where the tests protect it.
-    * A confusing exit: 0 = the run finished (done, or done-with-denials), 1 = it stopped early, 2 = a setup problem.
+What to look at, and why each piece is here (line numbers are for this file as shipped)
+    build_parser (line 39)
+        Every flag in one place, so you can see everything a run can be told to do.
+    make_approver (line 56)
+        Turns --approve into the harness's approval callback, and shows the human the real effect of what they are
+        being asked to approve.
+    main (line 69)
+        Loads memory first: a saved file wins, and the seed is only the very first start (76). Then it picks the
+        engine (98), wires the checkpoint hook that saves after every change (110), runs, and prints the
+        trace (119).
+    Exit codes (line 127; setup problems at 85)
+        0 finished, 1 stopped early, 2 a setup problem, so a script can tell the three apart.
+    Reading .env (line 131)
+        Only the command line does it, so tests that call main() stay predictable.
 
 Examples:
     python3 agent.py "Add 'File taxes', then show my list" --approve yes

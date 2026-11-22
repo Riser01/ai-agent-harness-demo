@@ -1,9 +1,16 @@
 """Phase 3b exercise: "Delete the 12 oldest of 20 tasks" with three scripted agents, A, B and C. No key needed.
 
-WHY THIS FILE EXISTS
-    The question: can you trust an agent that says "done"? Here three agents get the same goal. Agent A does
-    it properly. Agent B deletes the wrong tasks (the 12 newest). Agent C deletes nothing and says "done" anyway. Only
-    the harness's verify() step, which looks at the REAL list, can tell them apart. "Oldest" means lowest id.
+The question behind this file: can you trust an agent that says "done"? Three agents get the same goal and all
+three claim success. Agent A does it properly. Agent B deletes the wrong tasks (the 12 newest). Agent C deletes
+nothing and says "done" anyway. Read only their final words and you cannot tell them apart; only the harness's
+verify() step, which looks at the REAL list, can. "Oldest" means lowest id.
+
+What to look at
+    AGENTS     the three scripted agents and what each one really does.
+    deletes()  builds a script that deletes the given ids and then claims success.
+    the main block at the bottom
+               runs each agent on a fresh copy of the list and prints what it claimed next to the status the
+               harness gives it.
 
 Run:  python3 extras/oldest12_exercise.py          (needs Phase 3b: tools.make_oldest_verifier and verify in harness.run)
 """

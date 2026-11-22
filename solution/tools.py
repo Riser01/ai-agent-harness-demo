@@ -1,15 +1,24 @@
-"""The to-do app: the PROJECT layer (everything specific to a task list).
+"""The to-do app: everything the harness deliberately knows nothing about.
 
-WHY THIS FILE EXISTS
-    The harness (harness.py) knows nothing about tasks. It only knows "a tool has a name, a risk tier, an input check
-    and a run function". Everything about to-do lists lives here, so you could swap this file for an email tool or a
-    payments tool and keep the harness unchanged.
+harness.py only understands "a tool has a name, a risk tier, an input check and a run function". This file supplies
+the real tools for a to-do list, and the rules that belong to the app rather than to the engine. That split is the
+point: swap this file for email or payments tools and harness.py does not change.
 
-WHAT IT PREVENTS
-    * A model inventing arguments: every tool checks its input first, and a problem goes back to the model as text.
-    * Silent duplicates: the duplicate rule is a PROJECT rule, so it lives here and not in the harness.
-    * Hidden risk: each tool carries its risk tier (read / write / irreversible) in code, never in the prompt.
-    * Believing a false "done": make_oldest_verifier checks the real list after "delete my 3 oldest".
+What to look at, and why each piece is here (line numbers are for this file as shipped)
+    State and Task (lines 39 and 32)
+        The list lives in the program's hands, never in the model's memory. The model only ever asks.
+    The duplicate rule (_same at line 60, _run_add at 65)
+        A project rule, so it lives here and not in the harness. Raising turns the refusal into an error line the
+        model can read and report honestly.
+    Input checks (_is_text at 50, _is_int at 55)
+        A model can invent arguments. Every tool checks its own input first, and a problem goes back as text.
+    list_tasks (tool at 109, preview length at 28)
+        Each task is cut to 100 characters so one huge pasted note can never hide the ids of the others.
+    delete_task (tool at 118, describe at 83)
+        The one irreversible tool. Its risk tier is set here, in code, and describe() gives the human the real task
+        text to approve instead of a bare id.
+    make_oldest_verifier (line 131)
+        Checks the real list after "delete my 3 oldest", because a model's "done" is only a claim.
 """
 from dataclasses import dataclass, field
 from typing import Any

@@ -1,9 +1,15 @@
 """OPTIONAL stretch: a planner model proposes steps, and EVERY step still passes through the same harness gate.
 
-WHY THIS FILE EXISTS
-    "Split it into a planner and an executor" is a popular design. The lesson here is what it does NOT change: the plan
-    is only a proposal. Each step runs through harness.run with the same tools, the same gate and the same limits, so a
-    bad plan cannot delete anything the gate would not allow one step at a time.
+"Split it into a planner and an executor" is a popular design, and it is easy to assume it makes an agent safer
+on its own. The lesson here is what it does NOT change: the plan is only a proposal. Each step runs through
+harness.run with the same tools, the same gate and the same limits, so a bad plan cannot delete anything the gate
+would not allow one step at a time.
+
+What to look at
+    plan_with_model()  asks the real model for a short list of steps. Planning is a model call, with no side effects.
+    MAX_PLAN_STEPS     a plan is cut to this many steps, so the planner gets no unlimited ambition either.
+    execute()          runs every step through the same harness and stops at the first one that does not finish
+                       cleanly.
 
 Run:  python3 extras/planner_demo.py "Add 'File taxes' and delete the dentist task"      (a real model plans; you approve)
       python3 extras/planner_demo.py --scripted                                           (deterministic, no key needed)

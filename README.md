@@ -38,7 +38,7 @@ Each line says in plain words what passed and what did not. For a failing test i
 4. Never edit anything in `tests/`.
 
 ## The reference solution
-`solution/` is the finished, runnable project (`harness.py`, `tools.py`, `store.py`, `graph.py`, `agent.py`, plus copies of the provided files and tests). It is meant to be read: every file opens with why it exists and what it prevents.
+`solution/` is the finished, runnable project (`harness.py`, `tools.py`, `store.py`, `graph.py`, `agent.py`, plus copies of the provided files and tests). It is meant to be read: every file opens with a short story: what it is, why it is needed, what goes wrong without it, and which lines to look at.
 ```
 cd solution
 cp ../.env .env              # or make your own .env from ../.env.example

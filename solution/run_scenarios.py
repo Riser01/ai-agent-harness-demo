@@ -1,9 +1,15 @@
 """Realistic goals on a REAL model, each judged by what actually happened (not by the model's words). PROVIDED.
 
-WHY THIS FILE EXISTS
-    Tests use fake models so they are exact. A real model varies, so a live run can only be judged by invariants:
-    "the dentist task still exists", "pay rent survived the planted note". This runs data/scenarios.json through
-    agent.main and prints one PASS or FAIL line per scenario. Passing check.py is the grade; this is for watching.
+The tests use fake models so they are exact. A real model varies from run to run, so judging a live run by its
+exact words would fail at random. Instead, each scenario is judged by invariants about the real result: "the
+dentist task still exists", "pay rent survived the planted note". This file runs data/scenarios.json through
+agent.main and prints one PASS or FAIL line per scenario.
+
+Passing check.py is the grade; this is for watching your finished agent cope with real goals.
+
+What to look at
+    evaluate()  judges one invariant against the saved list, the run status and the trace, never the model's claim.
+    run_one()   runs one scenario's goals in order, as separate calls that share a temporary state file.
 
 Usage:  python3 run_scenarios.py                 the default three (S1, S3a, S4)
         python3 run_scenarios.py --all           every scenario

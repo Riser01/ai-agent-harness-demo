@@ -1,12 +1,19 @@
-"""Phase 0b: a bare agent loop with tools but NO harness. PROVIDED: you do not write this file.
+"""Phase 0b, a bare agent loop with tools but NO harness. PROVIDED: you do not write this file.
 
-WHY THIS FILE EXISTS
-    The plain call (ask.py) cannot act. This is the next step up: a loop that lets a model call tools. It is the loop
-    most tutorials stop at. Look at what it does NOT have: no step cap, no repeat check, no approval gate, no result cut,
-    no verification, no saved progress. Whatever the model asks for, it does.
+The plain call (ask.py) cannot act. This file is the next step up: a loop that lets a model call tools, which is
+the loop most tutorials stop at. Run it on the planted-note list and watch what happens when the text of one task
+tells the model to delete others. Whatever the model asks for, it does.
 
-WHAT IT PREVENTS (ONLY BECAUSE OF ONE SAFETY CATCH)
-    It refuses to run more than 15 steps so a demo cannot run away. A real naive agent has no such catch.
+The interesting part is what is missing: no step cap, no repeat check, no approval gate, no result cut, no
+verification and no saved progress. Each later phase adds one of those to your harness, and this file is the
+picture of life without them. Its only protection is one safety catch: it refuses to run more than 15 steps so
+a demo cannot run away. A real naive agent has no such catch.
+
+What to look at
+    do_tool()     runs a tool straight away, with no input check and no approval.
+    naive_run()   the whole "agent": ask the model, do what it says, repeat until it says it is done.
+    SAFETY_CATCH  the 15-step stop, there for the demo and not for the agent.
+    MENU          a bare tool menu with no risk tier, so nothing here knows that a delete cannot be undone.
 
 Run it:  python3 naive_agent.py                       the planted-note list, a real model
          python3 naive_agent.py --gullible            the same, with the deterministic gullible stand-in (labelled)

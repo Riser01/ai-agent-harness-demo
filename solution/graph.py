@@ -1,16 +1,31 @@
-"""Phase 5: the SAME harness, built with LangGraph. It reuses tools.py and the model contract; only the engine changes.
+"""The same harness, rebuilt as a LangGraph graph: the seven parts again, under LangGraph's names.
 
-WHY THIS FILE EXISTS
-    LangGraph is a framework for agent loops. Reading this file next to harness.py shows that its ideas are the seven
-    parts you already built, with different names: the loop is a graph with a cycle, the gate is interrupt(), memory is
-    a checkpointer, the trace is stream(). Learn the parts once, recognise them in any framework.
+harness.py builds the loop, the gate, the memory and the trace by hand so you can see why each exists. LangGraph is a
+framework that packages some of those ideas: you describe the steps as a graph, and it saves the state and can pause for
+a human. Reading this file next to harness.py shows that nothing new happens. The loop is a cycle in a graph, the gate
+is interrupt(), memory is a checkpointer, the trace is stream(). Learn the parts once and you can recognise them in
+any agent framework. It reuses tools.py, handover_note and the model contract from the plain version, and only the
+engine changes.
 
-WHAT IT PREVENTS
-    The "framework magic" feeling. Every piece below is labelled with the harness part it replaces.
+Where the seven parts live in this engine (line numbers are for this file as shipped)
+    1 Loop      the edge that sends act back to decide (line 144) is the loop; the conditional edges (130,
+                134) pick the exits. The step cap is a counter in the state (line 70), so a pause cannot
+                reset it, and recursion_limit (155) is only a backstop.
+    2 Tools     the act node (line 105): validate, run once, never retried; a failure becomes an error line.
+    3 Context   cut() (line 63) caps every result. There is no history window in this engine.
+    4 Memory    the checkpointer (line 146) saves the state after every node, keyed by thread_id. The state's
+                shape is GState (line 44); its history is append-only.
+    5 Gates     the gate node (line 85) calls interrupt() (95), which pauses and saves the whole run;
+                the driver resumes it with the human's answer (196). Default deny and the denial cap are here too.
+    6 Verify    the check node (line 117) runs verify(state) after the model says "final".
+    7 Trace     stream() (line 183) is the flight recorder; record() (line 160) turns each update into
+                one trace line, in the same format as the plain harness.
+    + Recovery  the hand-over note is built on the way out (202); the recursion backstop is caught at 198.
 
-DIFFERENCES FROM harness.run (on purpose, to stay small)
-    * An unknown tool is treated as irreversible and gated (the harness refuses it outright).
-    * No repeat check, history window or checkpoint hook. The step cap, denial cap, gate and verify are all here.
+Differences from the plain harness, on purpose, to keep this file small
+    * An unknown tool is treated as irreversible and gated (the plain harness refuses it outright).
+    * There is no repeat check, no history window and no checkpoint hook. The step cap, denial cap, gate and verify
+      are all here.
 
 Requires:  pip install -r requirements.txt    (langgraph 1.2.23)
 """
@@ -46,10 +61,10 @@ def build_graph(model, tools, verify, max_steps, max_result_chars, max_denials, 
     by_name = {t.name: t for t in tools}
 
     def cut(text: str) -> str:
-        """Context: cut every result, as in the plain harness."""
+        """[part 3, Context] Cut every result, as in the plain harness."""
         return text if len(text) <= max_result_chars else text[:max_result_chars] + " [truncated]"
 
-    # NODE decide = harness step 1-3 (loop + model call). The cap is a counter in state, so a pause cannot reset it.
+    # NODE decide [part 1, Loop] = harness steps 1 to 3: ask the model. The step cap is a counter in state, so a pause cannot reset it.
     def decide(s: GState):
         """Ask the model. Returns only the keys it changes."""
         if s["steps"] >= max_steps:
@@ -66,7 +81,7 @@ def build_graph(model, tools, verify, max_steps, max_result_chars, max_denials, 
         call = {"tool": str(d["tool"]), "args": args}
         return {"steps": s["steps"] + 1, "pending": call, "history": [f"assistant wants {call['tool']} {_args(args)}"]}
 
-    # NODE gate = harness part 5. interrupt() pauses the whole graph and saves it; the human's answer resumes it.
+    # NODE gate [part 5, Gates] = harness step 6. interrupt() pauses the whole graph and saves it; the human's answer resumes it.
     def gate(s: GState):
         """Irreversible (or unknown) tools wait for a human. On resume this node re-runs from the top, so no side effects here."""
         call = s["pending"]
@@ -86,7 +101,7 @@ def build_graph(model, tools, verify, max_steps, max_result_chars, max_denials, 
             update.update(status="denied-limit", answer="stopped: too many actions were denied")
         return update
 
-    # NODE act = harness parts 2 and 7 (tools). A failure becomes an error line the model can read.
+    # NODE act [part 2, Tools] = harness steps 5 and 7. A failure becomes an error line the model can read.
     def act(s: GState):
         """Validate, then run the tool. Never retried."""
         call = s["pending"]
@@ -98,7 +113,7 @@ def build_graph(model, tools, verify, max_steps, max_result_chars, max_denials, 
             line = f"error: {err}"
         return {"pending": None, "history": [cut(line)]}
 
-    # NODE check = harness part 6 (verify): look at the world, not at the model's claim.
+    # NODE check [part 6, Verify] = harness step 2 after "final": look at the world, not at the model's claim.
     def check(s: GState):
         """After 'final': run the verifier and pick the final status."""
         problem = None
@@ -111,7 +126,7 @@ def build_graph(model, tools, verify, max_steps, max_result_chars, max_denials, 
             return {"status": "failed-verification", "answer": f"not done: {problem}"}
         return {"status": "done-with-denials" if s["denials"] else "done"}
 
-    # EDGES = the loop and its exits (harness part 1): plain functions that pick the next node.
+    # EDGES [part 1, Loop] = the exits of the loop: plain functions that pick the next node.
     def after_decide(s: GState):
         """A status means stop; a pending call means the gate; otherwise the model said final."""
         return "stop" if s["status"] else ("gate" if s["pending"] else "check")
@@ -128,7 +143,7 @@ def build_graph(model, tools, verify, max_steps, max_result_chars, max_denials, 
     g.add_conditional_edges("gate", after_gate, {"act": "act", "decide": "decide", "stop": END})
     g.add_edge("act", "decide")                      # the cycle: this edge IS the loop
     g.add_edge("check", END)
-    return g.compile(checkpointer=InMemorySaver())   # memory: state saved after every node, per thread_id
+    return g.compile(checkpointer=InMemorySaver())   # [part 4, Memory]: state saved after every node, per thread_id
 
 
 def run_graph(goal, *, model, tools, state, max_steps=10, max_result_chars=300, max_denials=3,
@@ -143,7 +158,7 @@ def run_graph(goal, *, model, tools, state, max_steps=10, max_result_chars=300, 
     step = 0
 
     def record(node: str, delta: dict) -> None:
-        """Trace: turn one stream() update into a trace line. stream() is the graph's built-in flight recorder."""
+        """[part 7, Trace] Turn one stream() update into a trace line. stream() is the graph's built-in flight recorder."""
         nonlocal step
         step = delta.get("steps", step)
         for line in delta.get("history", []):      # each history line a node added becomes one trace line

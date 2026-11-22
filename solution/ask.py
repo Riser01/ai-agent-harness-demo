@@ -1,8 +1,16 @@
-"""Phase 0: the plain prompt call. This is the "before" picture: a model that can talk but cannot act.
+"""Phase 0, the plain prompt call: the "before" picture of a model that can talk but cannot act.
 
-WHY THIS FILE EXISTS
-    Before building a harness, see what a bare model does with "Add 'pay rent' to my to-do list". It replies "Done!".
-    Nothing was saved, because nothing in this program can save anything: no tools, no loop, no state.
+Before you build a harness, it helps to see what a bare model does with "Add 'pay rent' to my to-do list". It
+replies "Done!", and nothing was saved. Nothing in this program can save anything: there are no tools, no loop
+and no state, so the only thing the model can produce here is words.
+
+Keep that gap in mind for the rest of the course. Every later file exists to turn "the model said it" into "it
+really happened, and we can check".
+
+What to look at
+    PROMPT        the one request we send, the same kind of request the later phases handle properly.
+    plain_call()  sends it and reports the reply next to the tasks really saved, which is always an empty list.
+    main()        prints the two side by side so the gap is impossible to miss.
 
 Run it live:  python3 ask.py     (needs a model key in .env; see .env.example)
 """

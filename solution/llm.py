@@ -1,19 +1,24 @@
-"""Talk to a real model through ONE OpenAI-compatible chat endpoint. PROVIDED to learners: you do not write this file.
+"""This file talks to a real model through ONE OpenAI-compatible chat endpoint. PROVIDED: you do not write this file.
 
-WHY THIS FILE EXISTS
-    The harness only needs one thing from a model: a function that takes the history (a list of text lines) and returns
-    {"tool": name, "args": {...}} or {"final": text}. This file turns that into one HTTP call.
-    It speaks the common "OpenAI-compatible chat" format, which Google Gemini, Groq, OpenRouter, Cerebras, NVIDIA and
-    local servers such as Ollama or LM Studio all offer. By default it points at Gemini; to use another provider you
-    change three settings in .env (LLM_BASE_URL, LLM_API_KEY, LLM_MODEL) and touch no code.
-    It is STATELESS: every call sends the harness's own history, so the harness (not the vendor) owns the context.
+The harness only needs one thing from a model: a function that takes the history (a list of text lines) and
+returns {"tool": name, "args": {...}} or {"final": text}. This file turns that into one HTTP call. It speaks the
+common "OpenAI-compatible chat" format, which Google Gemini, Groq, OpenRouter, Cerebras, NVIDIA and local servers
+such as Ollama or LM Studio all offer. By default it points at Gemini; to use another provider you change three
+settings in .env (LLM_BASE_URL, LLM_API_KEY, LLM_MODEL) and touch no code. So instead of one adapter per vendor,
+there is a single small code path.
 
-WHAT IT PREVENTS
-    * One adapter per vendor: a single small code path.
-    * A tool menu written twice: the menu the model reads is built from the same Tool objects the harness runs.
-    * A busy or rate-limited API ending your run: a model call has no side effects, so waiting and asking again is safe.
-      (The harness itself never retries a write; only this model call is retried.)
-    * One badly formatted reply ending the run: one polite re-ask is allowed, because asking again changes nothing.
+It is STATELESS: every call sends the harness's own history, so the harness, not the vendor, owns the context.
+
+What to look at
+    settings()             reads the key, address and model name from the environment, and stops with a plain fix
+                           when a key is missing.
+    build_system_prompt()  builds the tool menu the model reads from the same Tool objects the harness runs, so
+                           the menu is never written twice.
+    _post(), RETRY_STATUS  a busy or rate-limited API is waited out and asked again instead of ending your run.
+                           That is safe because a model call has no side effects. (The harness itself never
+                           retries a write; only this model call is retried.)
+    make_model()           one badly formatted reply gets one polite re-ask instead of ending the run, because
+                           asking again changes nothing.
 
 Standard library only. Keys come from the environment (config.load_env() fills it from your .env). No key is in this file.
 """

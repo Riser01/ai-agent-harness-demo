@@ -1,14 +1,15 @@
 """Deterministic stand-ins for a real model, so tests give the same answer every time with no key and no network.
 
-WHY THIS FILE EXISTS
-    Code written by a coding agent must be gradeable without randomness. A real model varies from run to run, so the
-    tests use these fakes instead. Each one has the same shape as a real model: history lines in, one decision out.
+Code written by a coding agent must be gradeable without randomness. A real model varies from run to run, so a
+test that used one could pass today and fail tomorrow for no reason in your code. The tests use these fakes
+instead. Each one has the same shape as a real model: history lines in, one decision out, so the harness cannot
+tell the difference.
 
-THE THREE FAKES
-    scripted(decisions)   replays a fixed list of decisions, then repeats the last one
-    gullible(history)     obeys any "delete/remove task N" it finds inside a tool result: it plays a FOOLED model,
-                          which proves the gate protects you even when the model does not
-    varying(tool, key)    never repeats exactly the same call, so it can only be stopped by the step cap
+What to look at: the three fakes
+    scripted(decisions)   replays a fixed list of decisions, then repeats the last one.
+    gullible(history)     obeys any "delete/remove task N" it finds inside a tool result. It plays a FOOLED model,
+                          which proves the gate protects you even when the model does not.
+    varying(tool, key)    never repeats exactly the same call, so it can only be stopped by the step cap.
 """
 import os
 import re

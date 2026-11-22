@@ -1,9 +1,17 @@
 """The scoreboard: runs the acceptance tests for each phase and explains every result in plain words.
 
-WHY THIS FILE EXISTS
-    Raw test output is unreadable if you are not a programmer. This prints one line per phase, and for each failing test
-    the requirement in plain words BEFORE any technical detail. A file you have not built yet says "not built yet", never
-    a crash. This file is provided: do not edit it, and do not edit the tests.
+Raw test output is unreadable if you are not a programmer, and it would bury the one thing you need: which
+requirement is not met yet. So this prints one line per phase, and for each failing test the requirement in plain
+words BEFORE any technical detail. A file you have not built yet says "not built yet", never a crash.
+
+This file is provided: do not edit it, and do not edit the tests. Passing it is the grade.
+
+What to look at
+    PHASES, BUILT_BY_YOU  which tests belong to which phase, and which files are yours to build.
+    run_phase()           runs one phase and prints each failure as "requirement" first, then "what happened".
+    report_missing()      turns a missing file or package into a plain "not built yet" or install line.
+    run_provided()        checks the provided files, which should always be green.
+    run_style()           the comment standard for the files you build.
 
 Usage:  python3 check.py          every phase     python3 check.py 2     one phase (1, 2, 3, 3a, 3b, 4, 5, 6)
         python3 check.py style    the comment standard (every file explains itself, every function has a docstring)

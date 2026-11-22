@@ -1,23 +1,29 @@
-"""The agent harness: the generic engine around a model. The model proposes; this file decides what actually runs.
+"""The harness: the plain code that stands between a model and the real world.
 
-WHY THIS FILE EXISTS
-    A model can be wrong, fooled or stuck. The harness is plain code that enforces what a prompt can only ask for:
-    stop after N steps, refuse a repeating action, ask a human before anything irreversible, cut huge outputs, check the
-    real state before believing "done", save progress, and keep a readable trace of every step.
+A model can only propose ("delete task 2"). Everything that decides what actually happens is in this file, and none
+of it is a prompt a model could talk its way past: how long the loop may run, which tools exist and what they may be
+given, who has to say yes before something irreversible, how much text the model sees, whether "done" is really true,
+what was saved, and what happened. If you read one function in the whole project, read run() (line 89). It is one
+loop of eight numbered steps, and the comments inside it say which part of the harness each step is.
 
-WHAT IT PREVENTS
-    Runaway loops, unsafe actions, injected instructions, silent failures and lost work. It knows nothing about
-    to-do lists: `state` is opaque, and every project fact arrives through a Tool (see tools.py).
+The file knows nothing about to-do lists. `state` is an opaque object it hands to the tools, and every fact about the
+app arrives through a Tool (see tools.py). That is why the same engine could run an email or a payments agent
+unchanged, and why it can be tested with a fake model and no network.
 
-THE SEVEN PARTS (+ recovery), AND WHERE THEY LIVE
-    1 Loop     the for-loop in run() and its exits (the statuses below)
-    2 Tools    the Tool contract, and unknown tools / bad input coming back to the model as text
-    3 Context  cut() on every result, and view(), which limits how many history lines the model sees
-    4 Memory   the checkpoint hook: called after every step that changed something
-    5 Gates    risk tiers + approve(): only the harness decides, and the default answer is no
-    6 Verify   verify(state) after the model says "final"
-    7 Trace    TraceEntry lines, one per event
-    + Recovery a hand-over note whenever a run stops early; a write is never retried
+Where the seven parts live (line numbers are for this file as shipped)
+    1 Loop      the for-loop at line 132. It can end six ways, each a named status: model-error (line 140),
+                failed-verification (154), loop-detected (166), denied-limit (200),
+                checkpoint-failed (219) and step-limit (222). A model that says "final" ends it as
+                done or done-with-denials (155).
+    2 Tools     the Tool contract (line 46); lookup and input check in step 5 (168); the run in step 7
+                (203), which is never retried because a repeated write is worse than one failure.
+    3 Context   cut() (line 110) caps every result and trace line; view() (line 118) is the history window.
+    4 Memory    step 8 (line 213): after any tool that is not a read, the checkpoint hook saves the state.
+    5 Gates     step 6 (line 182): only irreversible tools ask a human, and no answer means no.
+    6 Verify    step 2 (line 142): when the model says "final", verify(state) checks the real world first.
+    7 Trace     log() (line 114) writes one TraceEntry per event; TraceEntry itself is at line 58.
+    + Recovery  finish() (line 128) is the one way out of run(), so every early stop gets the hand-over note
+                that handover_note() (line 75) writes for a person to pick up.
 
 Model contract:  model(history: list[str]) -> {"tool": name, "args": {...}}  or  {"final": text}
 """
@@ -124,7 +130,7 @@ def run(
         return RunResult(status, answer, denials, trace, handover_note(status, goal, trace))
 
     for step in range(1, max_steps + 1):
-        # ---- 1. ask the model. A failing or malformed model must never crash the harness. ----
+        # ---- 1. (part 1, Loop) ask the model. A failing or malformed model must never crash the harness. ----
         try:
             decision = model(view())
             if not isinstance(decision, dict) or ("final" not in decision and "tool" not in decision):
@@ -133,7 +139,7 @@ def run(
             log(step, "stop", f"model error: {err}")
             return finish("model-error", "stopped: the model call failed")
 
-        # ---- 2. "final": do not trust the claim, check the world (Verify) ----
+        # ---- 2. (part 6, Verify) "final": do not trust the claim, check the world ----
         if "final" in decision:
             text = str(decision["final"])
             log(step, "decide", f"final: {text}")
@@ -148,18 +154,18 @@ def run(
                 return finish("failed-verification", f"not done: {problem}")
             return finish("done-with-denials" if denials else "done", text)
 
-        # ---- 3. a tool call. Missing or non-dict args mean "no arguments". ----
+        # ---- 3. (part 2, Tools) a tool call. Missing or non-dict args mean "no arguments". ----
         name = str(decision["tool"])
         args = decision.get("args") if isinstance(decision.get("args"), dict) else {}
         log(step, "decide", f"{name} {_args_text(args)}")
 
-        # ---- 4. repeat check: the same call 3 times within the last 6 steps ----
+        # ---- 4. (part 1, Loop) repeat check: the same call 3 times within the last 6 steps ----
         recent.append(f"{name}:{_args_text(args)}")
         if recent[-6:].count(recent[-1]) >= 3:
             log(step, "stop", "same call 3 times in the last 6 steps")
             return finish("loop-detected", "stopped: repeating the same action")
 
-        # ---- 5. look the tool up, validate the input: problems go back to the model as text ----
+        # ---- 5. (part 2, Tools) look the tool up, validate the input: problems go back to the model as text ----
         tool = tool_map.get(name)
         if tool is None:
             problem = f"unknown tool {name}"
@@ -173,7 +179,7 @@ def run(
             history += [f"assistant wants {name} {_args_text(args)}", cut(f"error: {problem}")]
             continue
 
-        # ---- 6. the gate: only irreversible tools ask a human, and no answer means no ----
+        # ---- 6. (part 5, Gates) the gate: only irreversible tools ask a human, and no answer means no ----
         if tool.risk == "irreversible":
             allowed = False                        # default deny: stays False unless a human says yes
             try:
@@ -194,7 +200,7 @@ def run(
                     return finish("denied-limit", "stopped: too many actions were denied")
                 continue
 
-        # ---- 7. run the tool. Never retried: a repeated write is worse than one failure. ----
+        # ---- 7. (part 2, Tools) run the tool. Never retried: a repeated write is worse than one failure. ----
         try:
             result = tool.run(args, state)
         except Exception as err:
@@ -204,7 +210,7 @@ def run(
         log(step, "tool", result)
         history += [f"assistant wants {name} {_args_text(args)}", f"tool: {cut(result)}"]   # "tool:" marks it as DATA
 
-        # ---- 8. memory: save progress after anything that changed state ----
+        # ---- 8. (part 4, Memory) memory: save progress after anything that changed state ----
         if tool.risk != "read" and checkpoint is not None:
             try:
                 checkpoint(state)

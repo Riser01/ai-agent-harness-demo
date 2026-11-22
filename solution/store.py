@@ -1,14 +1,20 @@
-"""Save and load the task list as a JSON file, so work survives a restart or a crash. This is the MEMORY part.
+"""The saved file: how the to-do list survives the program ending.
 
-WHY THIS FILE EXISTS
-    State that lives only in memory disappears when the program stops. The harness calls a checkpoint hook after every
-    step that changed something; this file is the project's answer to "what do we save, and where".
+Without this file, a crash, a closed laptop or even a second command would start again from an empty list. The harness
+only promises to call a checkpoint hook after every step that changed something (harness.py, step 8). What to save and
+where to put it is the project's decision, so it lives here, in the app layer.
 
-WHAT IT PREVENTS
-    * Losing all progress on a crash: the harness checkpoints after each change.
-    * A half-written file: we write a temporary file first, then swap it in, so the saved file is always whole.
-    * Silently starting over on a damaged file: a bad file raises a clear error instead of pretending it is empty.
-    * Reusing an id: a file whose next_id is not above every saved id would hand out an id twice.
+What to look at, and why each piece is here (line numbers are for this file as shipped)
+    save_state (line 25, the swap at 31)
+        Writes a temporary file and then replaces the real one, so a crash in the middle of a write can never leave
+        half a file behind.
+    _whole and _text (lines 34 and 41)
+        Refuse a text id or a number where text belongs. A damaged file must be an error, not a guess.
+    load_state (line 48, the error at 58)
+        A missing file means a fresh start. A damaged one raises a clear error instead of quietly starting over, which
+        would erase real tasks the next time the file is saved.
+    The consistency check (line 60)
+        A next_id that is not above every saved id would hand out the same id twice.
 """
 import json
 import os

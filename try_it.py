@@ -1,9 +1,17 @@
 """A quick runner so you can WATCH each phase on a real model before agent.py exists. PROVIDED: you do not write this.
 
-WHY THIS FILE EXISTS
-    Phases 1 to 5 each end with "try it live". Phase 6 builds the real command-line app (agent.py). Until then, this
-    tiny script connects your harness.py and tools.py to the real model and prints the trace. It has no tests and no
-    rules of its own: it only calls what you built. It uses whatever your harness supports so far.
+Phases 1 to 5 each end with "try it live", but the real command-line app (agent.py) only arrives in Phase 6.
+Without something in between, you could pass every test and still never see your harness meet a real model.
+This tiny script fills that gap: it connects your harness.py and tools.py to the real model and prints the trace.
+
+It has no tests and no rules of its own; it only calls what you built, and it uses whatever your harness supports
+so far. So when something looks wrong here, the place to look is your own harness.py or tools.py.
+
+What to look at
+    main()       turns the options into arguments for your run(): approval mode, limits, seed, saved state, engine.
+    read_seed()  loads a starting list using only tools.py, so it works before Phase 4.
+    ARROWS       one short label per trace kind, so model, tool, gate and stop lines are easy to tell apart.
+    --gullible   swaps in the deterministic FOOLED model stand-in (no key needed), so you can watch the gate.
 
 Examples:
     python3 try_it.py "Add File taxes, then show my list" --approve yes
