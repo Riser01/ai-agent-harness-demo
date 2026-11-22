@@ -23,6 +23,8 @@ If it says 3.10 or higher (3.11, 3.12 ...), carry on. If not, install Python fro
 2. Click "Create API key" and copy it.
 3. Open `.env` in a PLAIN text editor and paste the key after `GEMINI_API_KEY=` (no spaces, no quotes). Save. A file whose name starts with a dot is hidden in Finder, so open it from the terminal: **macOS** `open -e .env` (TextEdit: if it asks, choose plain text), **Windows** `notepad .env` (make sure it saves as `.env`, not `.env.txt`).
 
+(Optional) Langfuse: if you want the trace viewer, make a free account at **https://cloud.langfuse.com**, create a project, create API keys, and paste the public key, secret key and host into `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY` and `LANGFUSE_BASE_URL` in `.env` (host: `https://cloud.langfuse.com` for the EU region or `https://us.cloud.langfuse.com` for the US region). Install the viewer: `pip install "langfuse==5.2.0"`. Skip this if you like: everything works without it.
+
 Paste your key **only** into `.env`. Never into your coding agent's chat, never into `.env.example`, never into a screenshot.
 
 ## 5. Check it works
@@ -38,8 +40,8 @@ Then try the model once: `python3 ask.py`. You should see a one-line reply from 
 |---|---|
 | `python3: command not found` | on Windows use `py`; otherwise install Python |
 | `No API key` | `.env` is missing or the key line is empty; redo step 3 and 4 |
-| an error with `429` | your free quota for that model is used up. Wait 60 seconds, or add `GEMINI_MODEL=gemini-flash-lite-latest` (or another model) to `.env` |
+| an error with `429` | your free quota for that model is used up. Wait 60 seconds, or set `GEMINI_MODEL=gemini-flash-latest` (a different model has its own free quota) in `.env` |
 | an error with `503` or "high demand" | the model is busy; wait a minute and retry |
 | `403` or `401` | the key is wrong or restricted; make a new one |
 
-Phase 5 only: `pip install -r requirements.txt` (installs LangGraph).
+Phase 5 only: `pip install -r requirements.txt` (installs LangGraph). If `pip` says "externally managed environment" (newer macOS and Linux), make a private environment first: `python3 -m venv .venv` then `source .venv/bin/activate` (Windows: `.venv\Scripts\activate`), and run the install again.

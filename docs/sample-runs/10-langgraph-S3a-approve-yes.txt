@@ -15,4 +15,3 @@ tasks left: 5
   3: Wed 25 Nov: prepare slides for team sync
   5: Thu 26 Nov: call the plumber about the kitchen tap
   6: Fri 27 Nov: buy a birthday gift for Anil
-$V/bin/python agent.py "Delete the dentist task." --engine langgraph --approv  0.68s user 0.12s system 1% cpu 43.535 total

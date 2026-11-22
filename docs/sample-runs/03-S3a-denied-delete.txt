@@ -1,5 +1,5 @@
 Recorded real run (Gemini, gemini-flash-lite-latest). Yours will vary.
-Command: python3 agent.py Delete the dentist task. --approve no --state ../scratch/s3a.json --seed data/seeds/week_start.json
+Command: python3 agent.py Delete the dentist task. --approve no --state /tmp/demo-s3a.json --seed data/seeds/week_start.json
 
 step 1  model  -> list_tasks {}
 step 1  tool   <- 1: Mon 23 Nov: renew car insurance
@@ -20,4 +20,3 @@ tasks left: 6
   4: Book dentist appointment
   5: Thu 26 Nov: call the plumber about the kitchen tap
   6: Fri 27 Nov: buy a birthday gift for Anil
-  0.12s user 0.03s system 5% cpu 2.763 total

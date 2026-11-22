@@ -32,4 +32,3 @@ PASS  S5   Delete the 3 oldest, then verify             status=done             
         18: Refill the water filter
         19: Sort the photo folders
         20: Cancel the unused subscription
-  0.14s user 0.04s system 3% cpu 4.933 total

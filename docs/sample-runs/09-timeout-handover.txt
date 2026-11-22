@@ -1,5 +1,5 @@
 Recorded real run (Gemini, gemini-flash-lite-latest). Yours will vary.
-Command: python3 agent.py Add File taxes --state ../scratch/t.json --seed data/seeds/week_start.json
+Command: LLM_TIMEOUT_SECONDS=0.001 python3 agent.py Add File taxes --state /tmp/demo-t.json --seed data/seeds/week_start.json
 
 step 1  stop   #  model error: model API not reachable: <urlopen error timed out>
 status: model-error
@@ -12,4 +12,3 @@ tasks left: 6
   4: Book dentist appointment
   5: Thu 26 Nov: call the plumber about the kitchen tap
   6: Fri 27 Nov: buy a birthday gift for Anil
-  0.12s user 0.04s system 3% cpu 4.230 total

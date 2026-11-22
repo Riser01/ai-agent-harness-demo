@@ -7,3 +7,5 @@ __pycache__/
 traces/
 venv/
 .venv/
+# private notes, never committed
+walkthrough/

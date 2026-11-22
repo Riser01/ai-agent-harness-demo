@@ -46,13 +46,18 @@ python3 check.py             # all green (Phase 5 needs: pip install -r requirem
 python3 agent.py "Delete the dentist task." --approve ask --seed data/seeds/week_start.json --state scratch.json
 python3 run_scenarios.py     # live scenarios on a real model
 ```
-Fallen behind? `checkpoints/after-phase-2.zip` and `after-phase-4.zip` hold the learner-built files up to those phases. Unzip into the project root (this overwrites your own `harness.py` and `tools.py`, so copy them first) and run `python3 check.py`.
+Fallen behind? `checkpoints/after-phase-2.zip` and `after-phase-4.zip` hold the learner-built files up to those phases. Unzip into the project root (this overwrites your own `harness.py`, `tools.py` (and `store.py` for the Phase 4 zip), so copy them first) and run `python3 check.py`.
 
-## Your key
-Your free Gemini key goes only in a git-ignored `.env` (see `SETUP.md`), **never** in your coding agent's chat or in a shared file. No key appears anywhere in this repo.
+## Free accounts you need (2 minutes each)
+| Account | Needed? | Why | Where |
+|---|---|---|---|
+| **Google AI Studio (Gemini)** | **Yes** | the model your agent talks to in live runs | https://aistudio.google.com/apikey (free key, no card) |
+| **Langfuse** | **Optional, you can skip it** | a viewer that draws each run as a tree. Nothing else needs it; `--export console` shows the same tree in your terminal | https://cloud.langfuse.com (free Hobby plan: create a project, then "API keys") |
+
+Both keys go only in a git-ignored `.env` (see `SETUP.md`), **never** in your coding agent's chat or in a shared file. No key appears anywhere in this repo. Without any key you can still do Phase 0b offline (`python3 naive_agent.py --gullible`), build Phases 1 to 6 and pass every `check.py`: the tests use fake models.
 
 ## Optional: see a run in Langfuse
-`python3 agent.py "..." --export langfuse` (needs `pip install langfuse` and three `LANGFUSE_*` lines in `.env`; works with `--engine langgraph` too; `extras/test_trace_export.py` runs after Phase 4) draws each run as a tree: the run, every model call (with model name, tokens and any retries), every tool, and every approval question. Failed runs and failed model calls are marked ERROR, refusals WARNING, and each run gets scores (`outcome`, `denials`, `steps`, `model_retries`). Without keys, `--export console` prints the same tree in the terminal. Prompts and task text leave your machine: use toy data only. See `docs/sample-runs/16-langfuse-enriched.txt`.
+`python3 agent.py "..." --export langfuse` (needs `pip install "langfuse==5.2.0"` and three `LANGFUSE_*` lines in `.env`; works with `--engine langgraph` too; `extras/test_trace_export.py` runs after Phase 4) draws each run as a tree: the run, every model call (with model name, tokens and any retries), every tool, and every approval question. Failed runs and failed model calls are marked ERROR, refusals WARNING, and each run gets scores (`outcome`, `denials`, `steps`, `model_retries`). Without keys, `--export console` prints the same tree in the terminal. Prompts and task text leave your machine: use toy data only. See `docs/sample-runs/16-langfuse-enriched.txt`.
 
 ## An honest note on how far you need to get
 Finishing **Phases 0 to 2** is a complete, successful outcome, especially if you do not code: you will have seen an agent with no rules do damage, built the loop, the tools, the approval gate and the context controls, and understood why those rules live in code. The non-coder route is `docs/predict-sheet.md` plus the recorded real runs in `docs/sample-runs/`. Want to see the parts a normal run never shows? `docs/drills.md`.

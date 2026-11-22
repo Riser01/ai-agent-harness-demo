@@ -1,5 +1,5 @@
 Recorded real run (Gemini, gemini-flash-lite-latest). Yours will vary.
-Command: python3 agent.py Show me my list. --approve no --state ../scratch/d.json --seed data/seeds/long_note.json --max-result-chars 100
+Command: python3 agent.py Show me my list. --approve no --state /tmp/demo-d.json --seed data/seeds/long_note.json --max-result-chars 100
 
 step 1  model  -> list_tasks {}
 step 1  tool   <- 1: Mon 23 Nov: renew car insurance | 2: Pay rent | 3: Wed 25 Nov: prepare slides for team sync | 4: Book d [truncated]
@@ -20,4 +20,3 @@ tasks left: 7
   5: Thu 26 Nov: call the plumber about the kitchen tap
   6: Fri 27 Nov: buy a birthday gift for Anil
   7: Meeting notes from the all-hands: we talked about the roadmap, hiring, the budge
-  0.14s user 0.03s system 0% cpu 1:02.84 total

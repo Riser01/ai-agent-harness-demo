@@ -23,4 +23,3 @@ PASS  S7   Memory across two separate runs              status=done             
         5: Thu 26 Nov: call the plumber about the kitchen tap
         6: Fri 27 Nov: buy a birthday gift for Anil
         7: File taxes
-  0.14s user 0.03s system 4% cpu 4.087 total

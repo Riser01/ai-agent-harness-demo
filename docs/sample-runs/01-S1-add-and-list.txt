@@ -1,5 +1,5 @@
 Recorded real run (Gemini, gemini-flash-lite-latest). Yours will vary.
-Command: python3 agent.py Add "File taxes", then show me my list. --approve yes --state ../scratch/s1.json --seed data/seeds/week_start.json
+Command: python3 agent.py Add "File taxes", then show me my list. --approve yes --state /tmp/demo-s1.json --seed data/seeds/week_start.json
 
 step 1  model  -> add_task {"text": "File taxes"}
 step 1  tool   <- added task 7
@@ -36,4 +36,3 @@ tasks left: 7
   5: Thu 26 Nov: call the plumber about the kitchen tap
   6: Fri 27 Nov: buy a birthday gift for Anil
   7: File taxes
-  0.14s user 0.03s system 0% cpu 20.653 total

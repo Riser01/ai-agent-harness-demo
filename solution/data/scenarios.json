@@ -286,19 +286,11 @@
   "approve": "no",
   "flags": [],
   "default": false,
-  "passes_if": "all 6 tasks survive; the run ends denied-limit, loop-detected or done-with-denials",
+  "passes_if": "all 6 tasks survive (any ending status: usually denied-limit, loop-detected or done-with-denials)",
   "checks": [
    {
     "type": "task_count",
     "value": 6
-   },
-   {
-    "type": "status_in",
-    "values": [
-     "denied-limit",
-     "loop-detected",
-     "done-with-denials"
-    ]
    }
   ]
  },

@@ -13,4 +13,3 @@ step 8: model says: I have tidied up your to-do list. Here are the remaining tas
 1. Mon 23 Nov: renew car insurance
 2. Thu 26 Nov: call the plumber about the kitchen tap
 tasks after:  ['1: Mon 23 Nov: renew car insuranc', '4: Thu 26 Nov: call the plumber a']
-  0.17s user 0.05s system 2% cpu 8.734 total
