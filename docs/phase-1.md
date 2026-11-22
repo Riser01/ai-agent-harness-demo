@@ -21,7 +21,7 @@ Phase 0b showed a loop with no harness. Now you build the first part of the real
 
 **Harness parts:** Loop, Tools, Trace. **Project feature:** add and list, duplicate rule.
 
-Contract: `02-technical-spec.md` sections 1, 2, 3 (steps 1 to 3 and 5 to 7), 7 and 8. Keep the `max_steps` loop in; it is graded in Phase 3a.
+Contract: `02-technical-spec.md` sections 1, 2, 3 (steps 1 to 3, 5 and 7), 7 and 8. Keep the `max_steps` loop in; it is graded in Phase 3a.
 
 ## Ask your agent exactly this
 > Read `AGENTS.md` and `docs/02-technical-spec.md`. Create `harness.py` and `tools.py` for Phase 1 only (the `Tool`, `TraceEntry` and `RunResult` classes, `run()` with the loop, and `add_task` and `list_tasks`). Do not add a gate, a window, a checkpoint or a verifier yet. Use only the standard library. Make `python3 check.py 1` pass and do not stop until it passes. Never edit anything in `tests/`.

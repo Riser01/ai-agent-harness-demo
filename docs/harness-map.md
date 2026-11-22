@@ -3,7 +3,7 @@
 ## 1. The seven parts, in our code
 | Part | In `harness.py` | Phase | Failure it prevents | Scenario | In the wild |
 |---|---|---|---|---|---|
-| Loop | the `for` loop and its exits | 1, 3a | runaway loop | S4 (`loop-detected`) | Claude Code, OpenAI Agents SDK (`max_turns`) |
+| Loop | the `for` loop and its exits | 1, 3a | runaway loop | S4 (can end `loop-detected`) | Claude Code, OpenAI Agents SDK (`max_turns`) |
 | Tools | the `Tool` contract, lookup, `validate` | 1 | wrong tool, invented argument | S8, S9 | MCP (a standard way to describe tools) |
 | Context | `cut`, `view` (the window) | 2 | a huge result drowns the model; injected text acts like an order | huge-note drill, S11 | long-context management in every coding agent |
 | Memory | the `checkpoint` hook, `store.py` | 4 | lost work after a crash | S7 | LangGraph checkpointers |
@@ -15,7 +15,7 @@
 ## 2. The five failure modes, and where to see each
 | Failure mode | Phase | See it | Real incident |
 |---|---|---|---|
-| Runaway loop | 3a | S4: the model keeps listing; the repeat check stops it | any unbounded agent bill |
+| Runaway loop | 3a | S4: if the model keeps listing, the repeat check stops it | any unbounded agent bill |
 | Wrong tool | 1, 2 | S9: asked to "archive", the model reaches for delete. With a blind `yes` it deletes (`sample-runs/12-wrong-tool-archive-approve-yes.txt`); with the gate, the question reads "delete" | OpenAI Operator (Feb 2025): asked to *find* eggs, it *bought* them |
 | Invented argument | 1 | S8 (a too-long text, retried shorter) and the model's own slips like a wrong argument name | |
 | Silent failure | 3b | S10 and the oldest-12 exercise: the claim differs from the real list | Gemini CLI (Jul 2025): moved files into a folder that was never created, reported success |

@@ -25,6 +25,20 @@ def save_state(state: State, path: str) -> None:
     os.replace(tmp, path)
 
 
+def _whole(value):
+    """Return `value` if it is a plain int (not a bool); a text or decimal id means a damaged file, so never guess."""
+    if type(value) is not int:
+        raise TypeError(f"expected a whole number, got {value!r}")
+    return value
+
+
+def _text(value):
+    """Return `value` if it is a string; any other type means a damaged file."""
+    if not isinstance(value, str):
+        raise TypeError(f"expected text, got {value!r}")
+    return value
+
+
 def load_state(path: str) -> State:
     """Read the state from `path`. A missing file is a fresh start; a damaged or inconsistent file is an error."""
     if not os.path.exists(path):
@@ -32,8 +46,8 @@ def load_state(path: str) -> State:
     try:
         with open(path, encoding="utf-8") as handle:
             data = json.load(handle)
-        tasks = [Task(id=int(t["id"]), text=str(t["text"])) for t in data["tasks"]]
-        state = State(tasks=tasks, next_id=int(data["next_id"]))
+        tasks = [Task(id=_whole(t["id"]), text=_text(t["text"])) for t in data["tasks"]]
+        state = State(tasks=tasks, next_id=_whole(data["next_id"]))
     except (OSError, ValueError, KeyError, TypeError) as err:
         raise ValueError(f"cannot read saved tasks in {path}: {err}") from err
     ids = [t.id for t in tasks]
