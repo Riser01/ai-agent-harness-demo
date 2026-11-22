@@ -46,7 +46,7 @@ python3 check.py             # all green (Phase 5 needs: pip install -r requirem
 python3 agent.py "Delete the dentist task." --approve ask --seed data/seeds/week_start.json --state scratch.json
 python3 run_scenarios.py     # live scenarios on a real model
 ```
-While a run goes, `agent.py` and `try_it.py` print a live log by default: each model reply (raw), tool input and output, and approval question and answer. `--quiet` turns it off. (`run_scenarios.py --verbose` prints each run's output.)
+While a run goes, every demo prints `INFO` lines: when the model is asked, its raw reply (with time and tokens), each tool's input and output, and each approval question and answer. In `agent.py` and `try_it.py` this live log is on by default and `--quiet` turns it off. (`run_scenarios.py --verbose` prints each run's output.)
 Fallen behind? `checkpoints/after-phase-2.zip` and `after-phase-4.zip` hold the learner-built files up to those phases. Unzip into the project root (this overwrites your own `harness.py`, `tools.py` (and `store.py` for the Phase 4 zip), so copy them first) and run `python3 check.py`.
 
 ## Free accounts you need (2 minutes each)

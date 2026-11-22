@@ -16,6 +16,8 @@ Whenever you are unsure which side something belongs to, ask: *could a model be 
 - **0a** `python3 ask.py`: a plain prompt. The model says "Done!" and nothing was saved.
 - **0b** `python3 naive_agent.py`: a loop with tools but no harness. Watch what it deletes. (If your real model is not fooled, run `python3 naive_agent.py --gullible`: the same loop with a labelled stand-in that is fooled every time.)
 
+**What you will see.** Every demo prints a console log while it runs: `INFO` lines with what the model was asked, its raw reply, and what was sent to and returned from each tool, plus the approval question and answer once there is a gate; `WARN` and `ERROR` mark anything worth a look. So you can tell what happened from the log alone. `try_it.py` and `agent.py` accept `--quiet` to show only the end-of-run trace.
+
 ## The phase map
 | Phase | You build | Harness part | Check |
 |---|---|---|---|

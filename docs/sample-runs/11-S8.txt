@@ -2,24 +2,23 @@ Recorded real run (Gemini, gemini-flash-lite-latest). Yours will vary.
 Command: python3 run_scenarios.py --only S8 --verbose
 
 Budget: 1 run(s), about 2 to 6 model calls each, so roughly 2 to 6 calls from your free quota.
-PASS  S8   An argument the tool rejects (too long)      status=done                model calls=4  4s
-      INFO  step 1  model  shown 1 line, replied in 1.0s (269 in / 83 out tokens): {"tool": "add_task", "args": {"text": "Buy groceries for the week: oat milk, brown rice, lentils, spinach, tomatoes, onions, garlic, ginger, bananas, apples, yoghurt, paneer, tea, coffee, olive oil, whole wheat flour, peanut butter, eggs, bread, cheese, pasta sauce, dishwasher tablets and kitchen towels so we do not run out"}}
+PASS  S8   An argument the tool rejects (too long)      status=done                model calls=3  3s
+      INFO  step 1  model  asking the model (shown 1 line)
+      INFO  step 1  model  reply in 0.6s (269 in / 83 out tokens): {"tool": "add_task", "args": {"text": "Buy groceries for the week: oat milk, brown rice, lentils, spinach, tomatoes, onions, garlic, ginger, bananas, apples, yoghurt, paneer, tea, coffee, olive oil, whole wheat flour, peanut butter, eggs, bread, cheese, pasta sauce, dishwasher tablets and kitchen towels so we do not run out"}}
       WARN  step 1  tool   add_task {"text": "Buy groceries for the week: oat milk, brown rice, lentils, spinach, tomatoes, onions, garlic, ginger, bananas, apples, yoghurt, paneer, tea, coffee, olive oil, whole wheat flour, peanut butter, eggs, bread, cheese, pasta sauce, dishwasher tablets and kitchen towels so we do not run out"}  input rejected: text must be a non-empty string of at most 200 characters
-      INFO  step 2  model  shown 3 lines, replied in 0.8s (366 in / 66 out tokens): {"tool": "add_task", "args": {"text": "Buy groceries: oat milk, brown rice, lentils, spinach, tomatoes, onions, garlic, ginger, bananas, apples, yoghurt, paneer, tea, coffee, olive oil, flour, peanut butter, eggs, bread, cheese, dishwasher tablets"}}
-      WARN  step 2  tool   add_task {"text": "Buy groceries: oat milk, brown rice, lentils, spinach, tomatoes, onions, garlic, ginger, bananas, apples, yoghurt, paneer, tea, coffee, olive oil, flour, peanut butter, eggs, bread, cheese, dishwasher tablets"}  input rejected: text must be a non-empty string of at most 200 characters
-      INFO  step 3  model  shown 5 lines, replied in 1.0s (446 in / 22 out tokens): {"tool": "add_task", "args": {"text": "Buy weekly groceries and household supplies"}}
-      INFO  step 3  tool   add_task {"text": "Buy weekly groceries and household supplies"}  ->  added task 7
-      INFO  step 4  model  shown 7 lines, replied in 1.1s (470 in / 14 out tokens): {"final": "Added task: Buy weekly groceries and household supplies"}
-      INFO          run    ended: status=done after 4 model calls. Last: final: Added task: Buy weekly groceries and household supplies
+      INFO  step 2  model  asking the model (shown 3 lines)
+      INFO  step 2  model  reply in 1.5s (366 in / 66 out tokens): {"tool": "add_task", "args": {"text": "Buy groceries: oat milk, rice, lentils, spinach, tomatoes, onions, garlic, ginger, fruit, yogurt, paneer, tea, coffee, oil, flour, peanut butter, eggs, bread, cheese, sauce, dishwasher tablets, towels"}}
+      INFO  step 2  tool   add_task {"text": "Buy groceries: oat milk, rice, lentils, spinach, tomatoes, onions, garlic, ginger, fruit, yogurt, paneer, tea, coffee, oil, flour, peanut butter, eggs, bread, cheese, sauce, dishwasher tablets, towels"}  ->  added task 7
+      INFO  step 3  model  asking the model (shown 5 lines)
+      INFO  step 3  model  reply in 1.1s (434 in / 27 out tokens): {"final": "I've added the grocery task with a slightly shortened list to fit the character limit (ID 7)."}
+      INFO          run    ended: status=done after 3 model calls. Last: final: I've added the grocery task with a slightly shortened list to fit the character limit (ID 7).
       step 1  model  -> add_task {"text": "Buy groceries for the week: oat milk, brown rice, lentils, spinach, tomatoes, onions, garlic, ginger, bananas, apples, yoghurt, paneer, tea, coffee, olive oil, whole wheat flour, peanut butter, eggs, bread, cheese, pasta sauce, dishwasher tablets and kitchen towels so we do not ru [truncated]
       step 1  error  !  error: text must be a non-empty string of at most 200 characters
-      step 2  model  -> add_task {"text": "Buy groceries: oat milk, brown rice, lentils, spinach, tomatoes, onions, garlic, ginger, bananas, apples, yoghurt, paneer, tea, coffee, olive oil, flour, peanut butter, eggs, bread, cheese, dishwasher tablets"}
-      step 2  error  !  error: text must be a non-empty string of at most 200 characters
-      step 3  model  -> add_task {"text": "Buy weekly groceries and household supplies"}
-      step 3  tool   <- added task 7
-      step 4  model  -> final: Added task: Buy weekly groceries and household supplies
+      step 2  model  -> add_task {"text": "Buy groceries: oat milk, rice, lentils, spinach, tomatoes, onions, garlic, ginger, fruit, yogurt, paneer, tea, coffee, oil, flour, peanut butter, eggs, bread, cheese, sauce, dishwasher tablets, towels"}
+      step 2  tool   <- added task 7
+      step 3  model  -> final: I've added the grocery task with a slightly shortened list to fit the character limit (ID 7).
       status: done
-      answer: Added task: Buy weekly groceries and household supplies
+      answer: I've added the grocery task with a slightly shortened list to fit the character limit (ID 7).
       tasks left: 7
         1: Mon 23 Nov: renew car insurance
         2: Pay rent
@@ -27,4 +26,4 @@ PASS  S8   An argument the tool rejects (too long)      status=done             
         4: Book dentist appointment
         5: Thu 26 Nov: call the plumber about the kitchen tap
         6: Fri 27 Nov: buy a birthday gift for Anil
-        7: Buy weekly groceries and household supplies
+        7: Buy groceries: oat milk, rice, lentils, spinach, tomatoes, onions, garlic, ginge

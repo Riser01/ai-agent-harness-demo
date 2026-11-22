@@ -22,8 +22,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path[:0] = [os.path.join(HERE, ".."), os.path.join(HERE, "..", "tests")]
 
 from fakes import scripted
-from harness import run
 from tools import ALL_TOOLS, State, Task
+from trace_export import ListSink, Tracer, run_traced
 
 MAX_PLAN_STEPS = 5     # a plan is cut to this many steps: the planner gets no unlimited ambition either
 
@@ -47,7 +47,10 @@ def plan_with_model(goal: str, tasks_text: str) -> list[str]:
 def execute(goal, plan, executor_for, state, approve):
     """Run each planned step through the SAME harness. Stop at the first step that does not finish cleanly."""
     for number, step in enumerate(plan, start=1):
-        result = run(step, model=executor_for(step), tools=ALL_TOOLS, state=state, approve=approve, max_steps=4)
+        print(f'PLAN STEP {number}: "{step}"')
+        # The live log (extras/trace_export.py) prints each model reply, tool call and approval as it happens.
+        result = run_traced(step, Tracer(ListSink(), log=print), model=executor_for(step), tools=ALL_TOOLS, state=state,
+                            approve=approve, max_steps=4)
         print(f'step {number} "{step}" -> {result.status}')
         for line in result.trace:
             print(f"      {line.step} {line.kind:<6} {line.detail}")

@@ -141,7 +141,7 @@ class Provided(unittest.TestCase):
         import naive_agent
         lines = []
         naive_agent.naive_run("x", lambda h: {"tool": "list_tasks", "args": {}}, [], out=lines.append)
-        self.assertEqual(len([l for l in lines if l.startswith("step")]), 15)
+        self.assertEqual(len([l for l in lines if l.startswith("INFO  step") and " tool " in l]), 15)   # one tool call per step
         self.assertTrue(any("SAFETY CATCH" in l for l in lines))
 
     def test_the_fakes_behave(self):

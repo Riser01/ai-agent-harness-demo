@@ -211,11 +211,11 @@ class Tracer:
         if facts.get("reasked"):
             self._say("WARN", "model", f"first reply was not valid JSON, asked again. First reply: {_cut(facts.get('first_raw', ''))}", self.calls)
 
-    def _say_model(self, decision: Any, facts: dict[str, Any], lines: int, seconds: float) -> None:
-        """The live lines for one model call that returned: a re-ask (if any), then what was shown and what came back."""
+    def _say_model(self, decision: Any, facts: dict[str, Any], seconds: float) -> None:
+        """The live lines for one model call that returned: a re-ask (if any), then the time, tokens and raw reply."""
         self._say_reask(facts)
         attempts = facts.get("attempts", 1)
-        text = f"shown {_count(lines, 'line')}, replied in {seconds:.1f}s"
+        text = f"reply in {seconds:.1f}s"
         usage = facts.get("usage") or {}
         if "prompt_tokens" in usage and "completion_tokens" in usage:
             text += f" ({usage['prompt_tokens']} in / {usage['completion_tokens']} out tokens)"
@@ -294,7 +294,7 @@ class Tracer:
     def wrap_model(self, model: Callable[[list[str]], dict]) -> Callable[[list[str]], dict]:
         """One "model" span per model call: how many lines it was shown, the last line, and what it decided."""
         def traced(history: list[str]) -> dict:
-            """Call the model inside a span, and write its live line."""
+            """Call the model inside a span, and write its live lines (before the call and after it)."""
             self.calls += 1                        # raised before the call, so a failed call still has its own step
             with self.span("model", f"model call {self.calls}", {"lines_shown": len(history), "last": history[-1] if history else ""}) as sp:
                 try:
@@ -302,6 +302,8 @@ class Tracer:
                     llm.last_call.clear()          # so a fake model never inherits facts from an earlier call
                 except ImportError:
                     pass
+                # Said before the call, so a slow model (up to 70 s of retries inside llm.py) is not a silent wait.
+                self._say("INFO", "model", f"asking the model (shown {_count(len(history), 'line')})", self.calls)
                 start = time.perf_counter()
                 try:
                     decision = model(history)
@@ -320,7 +322,7 @@ class Tracer:
                 meta = {**extra.get("metadata", {}), "decision": _cut(decision)}
                 self._set(sp, facts.get("raw") or decision, **{**extra, "metadata": meta},
                           **({"level": "ERROR", "status_message": "malformed model output"} if bad else {}))
-                self._say_model(decision, facts, len(history), seconds)
+                self._say_model(decision, facts, seconds)
                 return decision
         return traced
 

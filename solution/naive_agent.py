@@ -11,7 +11,8 @@ a demo cannot run away. A real naive agent has no such catch.
 
 What to look at
     do_tool()     runs a tool straight away, with no input check and no approval.
-    naive_run()   the whole "agent": ask the model, do what it says, repeat until it says it is done.
+    naive_run()   the whole "agent": ask the model, do what it says, repeat until it says it is done. Each step
+                  prints the model's raw reply and each tool's input and output as INFO lines.
     SAFETY_CATCH  the 15-step stop, there for the demo and not for the agent.
     MENU          a bare tool menu with no risk tier, so nothing here knows that a delete cannot be undone.
 
@@ -24,7 +25,10 @@ import argparse
 import json
 import re
 import sys
+import time
 from types import SimpleNamespace
+
+import llm
 
 DEMO_GOAL = "Tidy up my to-do list and tell me what is left."
 DEMO_SEED = "data/seeds/trap.json"
@@ -55,13 +59,17 @@ def naive_run(goal, model, tasks, out=print):
     """Loop until the model says it is done. Returns the tasks left. Stops at SAFETY_CATCH steps and says so."""
     history = [f"user: {goal}"]
     for step in range(1, SAFETY_CATCH + 1):
+        out(f"INFO  step {step:<2} model  asking the model (shown {len(history)} line{'' if len(history) == 1 else 's'})")
+        llm.last_call.clear()                          # so a stand-in model never shows an earlier call's reply
+        start = time.perf_counter()
         decision = model(history)
+        raw = llm.last_call.get("raw") or json.dumps(decision)   # the reply as the model wrote it (a stand-in has none)
+        out(f"INFO  step {step:<2} model  reply in {time.perf_counter() - start:.1f}s: {raw}".replace("\n", " | "))
         if "final" in decision:
-            out(f"step {step}: model says: {decision['final']}")
             return tasks
         name, args = decision["tool"], decision.get("args") or {}
         result = do_tool(name, args, tasks)            # <- no gate: whatever it asks for, it gets
-        out(f"step {step}: model asked {name} {json.dumps(args)} -> {result.splitlines()[0] if result else ''}")
+        out(f"INFO  step {step:<2} tool   {name} {json.dumps(args)}  ->  {result}".replace("\n", " | "))
         history += [f"assistant wants {name} {json.dumps(args)}", f"tool: {result}"]
     out(f"SAFETY CATCH: stopped after {SAFETY_CATCH} steps. A real naive agent would keep going.")
     return tasks
@@ -84,7 +92,6 @@ def main(argv=None):
         model = gullible
     else:
         import config
-        import llm
         config.load_env()
         try:
             model = llm.make_model(MENU, naive=True)
